@@ -5,7 +5,7 @@
 
 using namespace std;
 
-class                           A
+class   A
 {
     public:
         // Constructor
@@ -147,10 +147,27 @@ class                           A
 
             return  *this;
         }
+        // Overloading the member selection operator (->)
+        A                   *operator->() noexcept {return this;}   // Return pointer to the current object
+        // Overloading the pointer-to-member selection operator (->*)
+        template            <typename a>
+        a                   operator->*(a A::*A) const noexcept {return this->*A;}
+        // Overloading the division operator (/)
+        A                   operator/(const A &B) const noexcept
+        {
+            if      (!B.a)
+            {
+                cout    << "Warning: Division by zero, returning original value." << endl;
+            
+                return  *this;  // Return original object to prevent error
+            }
+            
+            return  A(static_cast<char>(a / B.a));  // Perform division and return new object
+        }
         char                a;
         short               B;
 };
-mt19937                         a(time(nullptr));
+mt19937 a(time(nullptr));
 uniform_int_distribution<int>B(-128, 127);
 int     main()
 {
@@ -266,6 +283,27 @@ int     main()
     D       -= C;
 
     cout    << "D after D -= C: " << D.B << endl;
+
+    A       k(static_cast<char>(5));
+
+    cout    << "Value of k->B: " << k->B << endl;
+
+    k->B    = 10;   // Modify B through the overloaded operator
+
+    cout    << "Updated value of k->B: " << k->B << endl;
+
+    A       L;
+    short   A::*l = &A::B;
+    L.*l    = 42;
+
+    cout    << "L->*l: " << L->*l << endl;  // Outputs: 42
+
+    A       M(static_cast<char>(10));
+    A       m(static_cast<char>(2));
+    A       N = M / m;
+
+    cout    << "Result of M / m: " << static_cast<short>(N.a) << endl;
+
 
     ExitProcess(0);
 }
