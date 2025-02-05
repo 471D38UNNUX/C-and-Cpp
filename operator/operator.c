@@ -136,6 +136,7 @@ static void     J(A *A)
     A->a    = A->A; // Update 'a' with the new value
     ++A->a; // Increment 'a' first
 }
+// Overloading the post-increment operator (A++)
 A               *j(A *B)
 {
     A       *b = a();
@@ -165,6 +166,26 @@ A               *L(A *B)
 
     return      A;
 }
+// Overloading the pre-decrement operator (--A)
+static void     l(A *A)
+{
+    A->a    = A->A; // Store current value in a
+    --A->a; // Decrement a first
+}
+// Overloading the post-decrement operator (A--)
+A               *M(A *B)
+{
+    A       *b = a();
+
+    memcpy(b, B, sizeof(A));    // Store original value
+    
+    b->a    = B->a; // Update 'a' with the current value
+    B->a--; // Decrement 'a'
+    
+    return  b;  // Return original value before decrement
+}
+// Overloading the subtraction assignment operator (-=)
+static void     m(A *a, A *B) {a->a = a->A - B->A;}
 A               *Destroy(A *A)
 {
     LocalFree(A);
@@ -175,118 +196,139 @@ int             main()
 {
     srand((unsigned int)time(0));
 
-    A       *l = NULL, *M = NULL, *m = NULL;
-    l       = B(l, (char)rand());
-    M       = B(M, (char)rand());
-    m       = B(m, (char)rand());
-    A       *(*N[])(A *a, A *B) = {C, C};
-    A       *n = (N[0](l, M), N[1](M, m));
+    A       *N = NULL, *n = NULL, *O = NULL;
+    N       = B(N, (char)rand());
+    n       = B(n, (char)rand());
+    O       = B(O, (char)rand());
+    A       *(*o[])(A *a, A *B) = {C, C};
+    A       *P = (o[0](N, n), o[1](n, O));
 
-    fprintf_s(stdout, "Result value: %d\n", n->A);
-    fprintf_s(stdout, "Logical NOT of n: %s\n", c(n) ? "true" : "false");   // Will print true or false based on the value of n->A
+    fprintf_s(stdout, "Result value: %d\n", P->A);
+    fprintf_s(stdout, "Logical NOT of o: %s\n", c(n) ? "true" : "false");   // Will print true or false based on the value of P->A
     // Testing the inequality operator
-    fprintf_s(stdout, "n != M: %s\n", D(n, M) ? "true" : "false");  // Will print true or false based on inequality of n->A and M->A
+    fprintf_s(stdout, "P != n: %s\n", D(P, n) ? "true" : "false");  // Will print true or false based on inequality of P->A and n->A
 
     // Testing the modulus operator
-    A       *O = d(n, M);
+    A       *p = d(P, n);
     
-    fprintf_s(stdout, "n %% M: %d\n", O->A);  // Print modulus result
+    fprintf_s(stdout, "P %% n: %d\n", p->A);  // Print modulus result
     
     // Testing the modulus assignment operator (%=)
-    E(n, M);
+    E(P, n);
 
-    fprintf_s(stdout, "n after n %%= M: %d\n", n->A);  // Print updated n->A after %=
+    fprintf_s(stdout, "P after P %%= n: %d\n", P->A);  // Print updated P->A after %=
 
     // Testing the bitwise AND operator (&)
-    A       *o = e(n, M);
+    A       *Q = e(P, n);
 
-    fprintf_s(stdout, "n & M: %d\n", o->A);   // Print bitwise AND result
+    fprintf_s(stdout, "P & n: %d\n", Q->A);   // Print bitwise AND result
 
     // Testing the address-of operator (&)
-    A       *P = F(n);
+    A       *q = F(P);
 
-    fprintf_s(stdout, "Memory address of n: %p\n", P);    // Print address of n
+    fprintf_s(stdout, "Memory address of o: %p\n", q);    // Print address of P
     // Testing the logical AND operator (&&)
-    fprintf_s(stdout, "n && M: %s\n", f(n, M) ? "true" : "false");  // Logical AND result
+    fprintf_s(stdout, "P && n: %s\n", f(P, n) ? "true" : "false");  // Logical AND result
 
     // Testing the bitwise AND assignment operator (&=)
-    G(n, M);
+    G(P, n);
 
-    fprintf_s(stdout, "n after n &= M: %d\n", n->A);  // Print updated n->A after &=
+    fprintf_s(stdout, "P after P &= n: %d\n", P->A);  // Print updated P->A after &=
 
     // Testing the function call operator ()
-    A       *p = g(n, M);
+    A       *R = g(P, n);
 
-    fprintf_s(stdout, "n(M): %d\n", p->a);  // Print function call result
+    fprintf_s(stdout, "P(N): %d\n", R->a);  // Print function call result
     // Testing cast operators
-    fprintf_s(stdout, "Casting n to int: %d\n", (int)n->A);
-    fprintf_s(stdout, "Casting n to bool: %s\n", (bool)n->A ? "true" : "false");
+    fprintf_s(stdout, "Casting o to int: %d\n", (int)P->A);
+    fprintf_s(stdout, "Casting o to bool: %s\n", (bool)P->A ? "true" : "false");
 
     // Testing multiplication operator
-    A       *Q = H(n, M);
+    A       *r = H(P, n);
     
-    fprintf_s(stdout, "n * M: %d\n", Q->a);
+    fprintf_s(stdout, "P * n: %d\n", r->a);
 
-    char    *q = &Q->A;
+    char    *S = &r->A;
 
-    fprintf_s(stdout, "%d\n", *q);  // Dereferencing Q
+    fprintf_s(stdout, "%d\n", *S);  // Dereferencing r
     
     // Testing multiplication assignment operator
-    h(n, M);
+    h(P, n);
 
-    fprintf_s(stdout, "n after n *= M: %d\n", n->a);
+    fprintf_s(stdout, "P after P *= n: %d\n", P->A);
 
     // Testing the addition operator
-    A       *R = I(n, M);
+    A       *s = I(P, n);
 
-    fprintf_s(stdout, "n + M: %d\n", R->a);
+    fprintf_s(stdout, "P + n: %d\n", s->a);
 
     // Testing the unary plus operator
-    A       *r = i(n);
+    A       *T = i(P);
 
-    fprintf_s(stdout, "Unary +n: %d\n", r->A);
+    fprintf_s(stdout, "Unary +P: %d\n", T->A);
 
-    A       *S = NULL;
-    S       = B(S, 5);
+    A       *t = NULL;
+    t       = B(t, 5);
 
-    fprintf_s(stdout, "Before pre-increment: %d\n", S->a);
+    fprintf_s(stdout, "Before pre-increment: %d\n", t->a);
 
-    J(S);
+    J(t);
 
-    fprintf_s(stdout, "After pre-increment: %d\n", S->a);
+    fprintf_s(stdout, "After pre-increment: %d\n", t->a);
 
-    A       *s = j(S);
+    A       *U = j(t);
 
-    fprintf_s(stdout, "After post-increment, s->a (original): %d\n", s->a);
-    fprintf_s(stdout, "After post-increment, S->a (incremented): %d\n", S->a);
+    fprintf_s(stdout, "After post-increment, U->a (original): %d\n", U->a);
+    fprintf_s(stdout, "After post-increment, t->a (incremented): %d\n", t->a);
 
     // Testing the addition assignment operator
-    K(n, M);
+    K(P, n);
 
-    fprintf_s(stdout, "n after n += M: %d\n", n->a);
+    fprintf_s(stdout, "P after P += n: %d\n", P->A);
 
     // Testing the subtraction operator
-    A       *T = k(n, M);
+    A       *u = k(P, n);
 
-    fprintf_s(stdout, "n - M: %d\n", T->a);
+    fprintf_s(stdout, "P - n: %d\n", u->a);
 
     // Testing the unary negation operator
-    A       *t = L(n);
+    A       *V = L(P);
 
-    fprintf_s(stdout, "Unary -n: %d\n", t->A);
+    fprintf_s(stdout, "Unary -P: %d\n", V->A);
 
-    l       = Destroy(l);
-    M       = Destroy(M);
-    m       = Destroy(m);
+    A       *v = NULL;
+    v       = B(v, 5);
+
+    fprintf_s(stdout, "Before pre-decrement: %d\n", v->a);
+
+    l(v);
+
+    fprintf_s(stdout, "After pre-decrement: %d\n", v->a);
+
+    A       *W = M(v);
+
+    fprintf_s(stdout, "After post-decrement, W->a (original): %d\n", W->a);
+    fprintf_s(stdout, "After post-decrement, v->a (decremented): %d\n", v->a);
+
+    // Testing the subtraction assignment operator
+    m(P, n);
+
+    fprintf_s(stdout, "P after P -= n: %d\n", P->A);
+
+    N       = Destroy(N);
+    n       = Destroy(n);
     O       = Destroy(O);
-    o       = Destroy(o);
     p       = Destroy(p);
+    Q       = Destroy(Q);
     R       = Destroy(R);
-    r       = Destroy(r);
-    S       = Destroy(S);
     s       = Destroy(s);
     T       = Destroy(T);
     t       = Destroy(t);
+    U       = Destroy(U);
+    u       = Destroy(u);
+    V       = Destroy(V);
+    v       = Destroy(v);
+    W       = Destroy(W);
 
     ExitProcess(0);
 }

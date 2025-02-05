@@ -123,6 +123,30 @@ class                           A
         A                   operator-(const A &a) const noexcept {return A(static_cast<short>(this->a - a.a));}
         // Overloading the unary negation operator (-)
         A                   operator-() const noexcept {return A(static_cast<char>(-a));}
+        // Overloading the pre-decrement operator (--A)
+        A                   &operator--() noexcept
+        {
+            B       = a;    // Store current value in B
+            --B;    // Decrement B first
+            
+            return  *this;  // Return updated object
+        }
+        // Overloading the post-decrement operator (A--)
+        A                   operator--(int) noexcept
+        {
+            A       A = *this;  // Store original value
+            A.B     = B;    // Update 'B' with the current value
+            B--;    // Decrement 'B'
+
+            return  A;  // Return original value before decrement
+        }
+        // Overloading the subtraction assignment operator (-=)
+        A                   &operator-=(const A &A) noexcept
+        {
+            B       = static_cast<short>(a - A.a);
+
+            return  *this;
+        }
         char                a;
         short               B;
 };
@@ -205,7 +229,7 @@ int     main()
 
     cout    << "After pre-increment: " << h.B << endl;
 
-    A       I = h++;  // Post-increment
+    A       I = h++;    // Post-increment
 
     cout    << "After post-increment, I.B (original): " << I.B << endl;
     cout    << "After post-increment, h.B (incremented): " << h.B << endl;
@@ -224,6 +248,24 @@ int     main()
     A       J = -D;
     
     cout    << "Unary -D: " << static_cast<short>(J.a) << endl;
+
+    A       j(static_cast<char>(5));
+
+    cout    << "Before pre-decrement: " << j.B << endl;
+
+    --j;
+
+    cout    << "After pre-decrement: " << j.B << endl;
+
+    A       K = j--;    // Post-decrement
+
+    cout    << "After post-decrement, K.B (original): " << K.B << endl;
+    cout    << "After post-decrement, j.B (decremented): " << j.B << endl;
+
+    // Testing the subtraction assignment operator
+    D       -= C;
+
+    cout    << "D after D -= C: " << D.B << endl;
 
     ExitProcess(0);
 }
