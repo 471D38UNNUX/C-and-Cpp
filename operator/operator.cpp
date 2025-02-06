@@ -164,6 +164,23 @@ class   A
             
             return  A(static_cast<char>(a / B.a));  // Perform division and return new object
         }
+        // Overloading the division assignment operator (/=)
+        A                   &operator/=(const A &A) noexcept
+        {
+            if      (!A.a)
+            {
+                cout    << "Warning: Division by zero, keeping original value." << endl;
+
+                return  *this;  // Keep original value to prevent error
+            }
+            a       /= A.a; // Perform division and update 'a'
+
+            return  *this;
+        }
+        // Overloading the less than operator (<)
+        bool                operator<(const A &A) const noexcept {return a < A.a;}  // Compare the 'a' values
+        // Overloading the shift left operator (<<)
+        A                   operator<<(int b) const noexcept {return A(static_cast<char>(a << b));} // Perform bitwise left shift and return new object
         char                a;
         short               B;
 };
@@ -304,6 +321,24 @@ int     main()
 
     cout    << "Result of M / m: " << static_cast<short>(N.a) << endl;
 
+    A       n(static_cast<char>(10));
+    A       O(static_cast<char>(2));
+
+    cout    << "Before n /= O: " << static_cast<short>(n.a) << endl;
+
+    n       /= O;
+
+    cout    << "After n /= O: " << static_cast<short>(n.a) << endl;
+
+    A       o(static_cast<char>(10));
+    A       P(static_cast<char>(15));
+
+    cout    << "o < P: " << (o < P ? "true" : "false") << endl;
+
+    A       p(static_cast<char>(5));    // 5 in binary: 00000101
+    A       Q = p << 2; // Perform left shift by 2 bits, result is 20 (binary: 00010100)
+
+    cout    << "Q.a: " << static_cast<short>(Q.a) << endl; // Output: 20
 
     ExitProcess(0);
 }

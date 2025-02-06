@@ -74,12 +74,7 @@ A               *E(A *A, bool a, char B, unsigned char b, short c)
     return  A;
 }
 /* This function as destructor */
-A               *e(A *A)
-{
-    CoTaskMemFree(A);
-
-    return      NULL;
-}
+static void     e(A *A[], size_t a) {for (size_t B = 0; B < a; B++) CoTaskMemFree(A[B]);}
 static void     F(a *A) {fprintf(stdout, "%u\n", A->a);}
 a               *f(A *A, bool B, char b, unsigned char C, short c)
 {
@@ -94,13 +89,11 @@ a               *f(A *A, bool B, char b, unsigned char C, short c)
 
     return  D;
 }
-a               *G(A *A, a *a)
+static void     G(A *A[], size_t B, a *b[], size_t C)
 {
-    A       = e(A);
+    e(A, B);
 
-    CoTaskMemFree(a);
-
-    return  NULL;
+    for (size_t c = 0; c < C; c++) CoTaskMemFree(b[c]);
 }
 static void     g(A *A, unsigned char a) {A->C = a;}
 B               *H(A *A, a *a, bool b, char C, unsigned char c, short D)
@@ -117,13 +110,11 @@ B               *H(A *A, a *a, bool b, char C, unsigned char c, short D)
 
     return  d;
 }
-B               *h(A *A, a *a, B *B)
+static void     h(A *A[], size_t b, a *C[], size_t c, B *D[], size_t d)
 {
-    a       = G(A, a);
+    G(A, b, C, c);
 
-    CoTaskMemFree(B);
-
-    return  NULL;
+    for (size_t E = 0; E < d; E++) CoTaskMemFree(D[E]);
 }
 static void     I(struct B *A, int a) {A->C = a;}
 static void     i(A *A) {A->B(A);}
@@ -147,13 +138,11 @@ b               *j(A *A, a *a, B *B, bool C, char c, unsigned char D, short d)
 
     return  E;
 }
-b               *K(A *A, a *a, B *B, b *b)
+static void     K(A *A[], size_t C, a *c[], size_t D, B *d[], size_t E, b *e[], size_t F)
 {
-    B   = h(A, a, B);
+    h(A, C, c, D, d, E);
 
-    CoTaskMemFree(b);
-
-    return  NULL;
+    for (size_t f = 0; f < F; f++) CoTaskMemFree(e[f]);
 }
 static void     k(struct C *A, unsigned int a) {A->B = a;}
 static void     L(struct C *A) {fprintf(stdout, "%u\n", A->B);}
@@ -168,12 +157,7 @@ C               *l()
 
     return  A;
 };
-C               *M(C *A)
-{
-    CoTaskMemFree(A);
-
-    return      A;
-}
+static void     M(C *A[], size_t a) {for (size_t B = 0; B < a; B++) CoTaskMemFree(A[B]);}
 int             main()
 {
     A       *A = NULL;
@@ -246,13 +230,16 @@ int             main()
     g->c(g->B);
 
     /* Destroy struct with calling destructor */
-    K(A, a, B, c);
-    K(A, a, B, d);
-    K(A, a, B, E);
+    
+    struct A    *H[] = {A};
+    struct a    *h[] = {a};
+    struct B    *I[] = {B};
+    struct b    *i[] = {c, d, E, g};
+    struct C    *J[] = {e};
 
-    M(e);
+    K(H, sizeof(H) / sizeof(H[0]), h, sizeof(h) / sizeof(h[0]), I, sizeof(I) / sizeof(I[0]), i, sizeof(i) / sizeof(i[0]));
 
-    K(A, a, B, g);
+    M(J, sizeof(J) / sizeof(J[0]));
 
     ExitProcess(0);
 }

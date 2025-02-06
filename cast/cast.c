@@ -19,12 +19,7 @@ Base            *CBase()
 
     return      new;
 }
-Base            *DBase(Base *Base)
-{
-    GlobalFree(Base);
-
-    return  Base;
-}
+static void     DBase(Base *Base[], size_t A) {for (size_t a = 0; a < A; a++) GlobalFree(Base[a]);}
 void            show() {fprintf(stdout, "Derived class\n");}
 Derived         *CDerived(Base *Base)
 {
@@ -39,13 +34,11 @@ Derived         *CDerived(Base *Base)
 
     return          new;
 }
-Derived         *DDerived(Base *Base, Derived *Derived)
+static void     DDerived(Base *Base[], size_t A, Derived *Derived[], size_t a)
 {
-    Base    = DBase(Base);
+    DBase(Base, A);
 
-    GlobalFree(Derived);
-
-    return  Derived;
+    for (size_t B = 0; B < a; B++) GlobalFree(Derived[B]);
 }
 void            print(int *ptr) {fprintf(stdout, "Const_cast value: %d\n", *ptr);}
 const char      *typeidname(type_info value)
@@ -148,10 +141,10 @@ int             main()
     if              (typeBase != typeDerived) fprintf(stdout, "baseObj and derivedObj have different types.\n");
 
     // Cleanup
-    d               = DDerived(b1, d);
-    b2              = DBase(b2);
-    b3              = DBase(b3);
-    derivedObj      = DDerived(baseObj, derivedObj);
+    Base            *ABase[] = {b1, b2, b3};
+    Derived         *ADerived[] = {d, derivedObj};
+    
+    DDerived(ABase, sizeof(ABase) / sizeof(ABase[0]), ADerived, sizeof(ADerived) / sizeof(ADerived[0]));
 
     ExitProcess(0);
 }
