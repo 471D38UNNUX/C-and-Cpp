@@ -40,7 +40,7 @@ Example         *MAExample(Example *src)
 {
     Example *new = CExample();
 
-    memcpy(new, src, sizeof(Example));
+    memcpy_s(new, sizeof(Example), src, sizeof(Example));
     
     src     = NULL;
 

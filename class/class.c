@@ -175,14 +175,14 @@ int             main()
     /*
     Copy assignment.
     Shallow copy constructor. */
-    memcpy(d, D, sizeof(b));
+    memcpy_s(d, sizeof(b), D, sizeof(b));
 
     b       *E = j(A, a, B, false, -128, 255, -32768);
     
     /*
     Copy assignment.
     Deep copy constructor. */
-    memcpy(E, d, sizeof(b));
+    memcpy_s(E, sizeof(b), d, sizeof(b));
 
     E->C(E->A);
     
@@ -209,13 +209,13 @@ int             main()
     if      (!G) ExitProcess(1);
 
     /* Move assignment */
-    memcpy(G, f, sizeof(b));
+    memcpy_s(G, sizeof(b), f, sizeof(b));
 
     f       = NULL;
     b       *g = j(A, a, B, true, 127, 0, 32767);
 
     /* Move assignment */
-    memcpy(g, G, sizeof(b));
+    memcpy_s(g, sizeof(b), G, sizeof(b));
 
     G       = NULL;
 

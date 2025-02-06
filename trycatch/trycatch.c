@@ -3,14 +3,14 @@
 #include <setjmp.h>
 
 jmp_buf     jumpBuffer;
-char    jumpValue, jmp;
+char        jumpValue, jmp;
 static void Error()
 {
     fprintf_s(stdout, "Test\n");
 
     longjmp(jumpBuffer, 1);
 }
-int     main()
+int         main()
 {
     jumpValue   = setjmp(jumpBuffer);
 
