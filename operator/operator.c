@@ -133,7 +133,7 @@ A               *I(A *B)
 {
     A       *b = a();
 
-    memcpy(b, B, sizeof(A));    // Store original value
+    memcpy_s(b, sizeof(A), B, sizeof(A));   // Store original value
     
     b->a    = B->a; // Update 'a' with the new value
     B->a++; // Increment 'a'
@@ -169,7 +169,7 @@ A               *k(A *B)
 {
     A       *b = a();
 
-    memcpy(b, B, sizeof(A));    // Store original value
+    memcpy_s(b, sizeof(A), B, sizeof(A));   // Store original value
     
     b->a    = B->a; // Update 'a' with the current value
     B->a--; // Decrement 'a'
@@ -213,6 +213,8 @@ A               *m(A *a, int b)
 
     return  A;
 }
+// Overloading the shift left assignment operator (<<=)
+static void     N(A *A, int a) {A->A <<= a;}    // Perform bitwise left shift and update 'A'
 static void     Destroy(A *A[], size_t a) {for (size_t B = 0; B < a; B++) LocalFree(A[B]);}
 int             main()
 {
@@ -381,7 +383,33 @@ int             main()
 
     fprintf_s(stdout, "Ac: %d\n", AD->A);   // Output: 20
 
-    A       *All[] = {O, o, P, q, R, S, t, U, u, V, W, w, X, x, Y, Z, z, AA, Aa, AB, Ab, AC, Ac};
+    A       *Ad = NULL;
+    Ad      = B(Ad, 5); // 5 in binary: 00000101
+
+    fprintf_s(stdout, "Before <<= : %d\n", Ad->A);
+
+    N(Ad, 2);   // Left shift by 2 bits
+
+    fprintf_s(stdout, "After <<= : %d\n", Ad->A);   // Output: 20 (binary: 00010100)
+
+    A       *AE = NULL, *Ae = NULL;
+    AE      = B(AE, 5);     // 5 in decimal
+    Ae      = B(Ae, 10);    // 10 in decimal
+
+    fprintf_s(stdout, "AE <= Ae: %s\n", AE->A <= Ae->A ? "true" : "false"); // Output: true
+
+    A       *AF = NULL, *Af = NULL;
+    AF      = B(AF, 5); // 5 in decimal
+    Af      = B(Af, 10);    // 10 in decimal
+
+    fprintf_s(stdout, "Before assignment: AF->a = %d\n", AF->A);    // Output: 5
+    fprintf_s(stdout, "Before assignment: Af->a = %d\n", Af->A);    // Output: 10
+
+    memcpy_s(AF, sizeof(A), Af, sizeof(A)); // Assign Af to AF
+
+    fprintf_s(stdout, "After assignment: AF->a = %d\n", AF->A); // Output: 10
+
+    A       *All[] = {O, o, P, q, R, S, t, U, u, V, W, w, X, x, Y, Z, z, AA, Aa, AB, Ab, AC, Ac, Ad, AE, Ae, AF, Af};
 
     Destroy(All, sizeof(All) / sizeof(All[0]));
 

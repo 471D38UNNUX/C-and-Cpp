@@ -181,6 +181,25 @@ class   A
         bool                operator<(const A &A) const noexcept {return a < A.a;}  // Compare the 'a' values
         // Overloading the shift left operator (<<)
         A                   operator<<(int b) const noexcept {return A(static_cast<char>(a << b));} // Perform bitwise left shift and return new object
+        // Overloading the shift left assignment operator (<<=)
+        A                   &operator<<=(int A) noexcept
+        {
+            a       <<= A;  // Perform bitwise left shift and update 'a'
+
+            return  *this;
+        }
+        // Overloading the less than or equal to operator (<=)
+        bool                operator<=(const A &A) const noexcept {return a <= A.a;}    // Compare the 'a' values for less than or equal to
+        // Overloading the assignment operator (=)
+        A                   &operator=(const A& A) noexcept
+        {
+            if      (this != &A)    // Prevent self-assignment
+            {
+                a = A.a;    // Copy the 'a' value
+                B = A.B;    // Copy the 'B' value
+            }
+            return  *this;  // Return the current object to allow chaining
+        }
         char                a;
         short               B;
 };
@@ -339,6 +358,29 @@ int     main()
     A       Q = p << 2; // Perform left shift by 2 bits, result is 20 (binary: 00010100)
 
     cout    << "Q.a: " << static_cast<short>(Q.a) << endl; // Output: 20
+
+    A       q(static_cast<char>(5));    // 5 in binary: 00000101
+
+    cout    << "Before <<= : " << static_cast<short>(q.a) << endl;
+
+    q       <<= 2;  // Left shift by 2 bits
+
+    cout    << "After <<= : " << static_cast<short>(q.a) << endl;   // Output: 20 (binary: 00010100)
+
+    A       R(static_cast<char>(5));    // 5 in decimal
+    A       r(static_cast<char>(10));   // 10 in decimal
+
+    cout    << "R <= r: " << (R <= r ? "true" : "false") << endl;   // Output: true
+
+    A       S(static_cast<char>(5));    // 5 in decimal
+    A       s(static_cast<char>(10));   // 10 in decimal
+
+    cout    << "Before assignment: S.a = " << static_cast<short>(S.a) << endl;  // Output: 5
+    cout    << "Before assignment: s.a = " << static_cast<short>(s.a) << endl;  // Output: 10
+
+    S = s;  // Assign s to S
+
+    cout    << "After assignment: S.a = " << static_cast<short>(S.a) << endl;   // Output: 10
 
     ExitProcess(0);
 }
