@@ -409,7 +409,31 @@ int             main()
 
     fprintf_s(stdout, "After assignment: AF->a = %d\n", AF->A); // Output: 10
 
-    A       *All[] = {O, o, P, q, R, S, t, U, u, V, W, w, X, x, Y, Z, z, AA, Aa, AB, Ab, AC, Ac, Ad, AE, Ae, AF, Af};
+    A       *AG = NULL, *Ag = NULL, *AH = NULL;
+    AG      = B(AG, 5); // 5 in decimal
+    Ag      = B(Ag, 5); // 5 in decimal
+    AH      = B(AH, 10);    // 10 in decimal
+
+    fprintf_s(stdout, "AG == Ag: %s\n", AG->A == Ag->A ? "true" : "false"); // Output: true
+    fprintf_s(stdout, "AG == AH: %s\n", AG->A == AH->A ? "true" : "false"); // Output: false
+
+    A       *Ah = NULL, *AI = NULL;
+    Ah      = B(Ah, 10);    // 10 in decimal
+    AI      = B(AI, 5); // 5 in decimal
+
+    fprintf_s(stdout, "Ah > AI: %s\n", Ah->A > AI->A ? "true" : "false");   // Output: true
+    fprintf_s(stdout, "AI > Ah: %s\n", AI->A > Ah->A ? "true" : "false");   // Output: false
+
+    A       *Ai = NULL, *AJ = NULL, *Aj = NULL;
+    Ai      = B(Ai, 10);    // 10 in decimal
+    AJ      = B(AJ, 10);    // 10 in decimal
+    Aj      = B(Aj, 5); // 5 in decimal
+
+    fprintf_s(stdout, "Ai >= AJ: %s\n", Ai->A >= AJ->A ? "true" : "false"); // Output: true
+    fprintf_s(stdout, "Ai >= Aj: %s\n", Ai->A >= Aj->A ? "true" : "false"); // Output: true
+    fprintf_s(stdout, "Aj >= Ai: %s\n", Aj->A >= Ai->A ? "true" : "false"); // Output: false
+
+    A       *All[] = {O, o, P, q, R, S, t, U, u, V, W, w, X, x, Y, Z, z, AA, Aa, AB, Ab, AC, Ac, Ad, AE, Ae, AF, Af, AG, Ag, AH, Ah, AI, Ai, AJ, Aj};
 
     Destroy(All, sizeof(All) / sizeof(All[0]));
 

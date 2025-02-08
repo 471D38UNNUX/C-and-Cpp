@@ -200,6 +200,12 @@ class   A
             }
             return  *this;  // Return the current object to allow chaining
         }
+        // Overloading the equality operator (==)
+        bool                operator==(const A &A) const noexcept {return a == A.a && B == A.B;}    // Compare both 'a' and 'B' values
+        // Overloading the greater than operator (>)
+        bool                operator>(const A &A) const noexcept {return a > A.a;}  // Compare based on 'a' value
+        // Overloading the greater than or equal to operator (>=)
+        bool                operator>=(const A &A) const noexcept {return a >= A.a;}    // Compare based on 'a' value
         char                a;
         short               B;
 };
@@ -381,6 +387,27 @@ int     main()
     S = s;  // Assign s to S
 
     cout    << "After assignment: S.a = " << static_cast<short>(S.a) << endl;   // Output: 10
+
+    A       T(static_cast<char>(5));    // 5 in decimal
+    A       t(static_cast<char>(5));    // 5 in decimal
+    A       U(static_cast<char>(10));   // 10 in decimal
+
+    cout    << "T == t: " << (T == t ? "true" : "false") << endl;   // Output: true
+    cout    << "T == U: " << (T == U ? "true" : "false") << endl;   // Output: false
+
+    A       u(static_cast<char>(10));   // 10 in decimal
+    A       V(static_cast<char>(5));    // 5 in decimal
+
+    cout    << "u > V: " << (u > V ? "true" : "false") << endl; // Output: true
+    cout    << "V > u: " << (V > u ? "true" : "false") << endl; // Output: false
+
+    A       v(static_cast<char>(10));   // 10 in decimal
+    A       W(static_cast<char>(10));   // 10 in decimal
+    A       w(static_cast<char>(5));    // 5 in decimal
+
+    cout    << "v >= W: " << (v >= W ? "true" : "false") << endl;   // Output: true
+    cout    << "v >= w: " << (v >= w ? "true" : "false") << endl;   // Output: true
+    cout    << "w >= v: " << (w >= v ? "true" : "false") << endl;   // Output: false
 
     ExitProcess(0);
 }
