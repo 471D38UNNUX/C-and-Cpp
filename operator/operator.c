@@ -215,225 +215,262 @@ A               *m(A *a, int b)
 }
 // Overloading the shift left assignment operator (<<=)
 static void     N(A *A, int a) {A->A <<= a;}    // Perform bitwise left shift and update 'A'
+// Overloading the right shift operator (>>)
+A               *n(A *a, A *b)
+{
+    A       *A = NULL;
+    A       = B(A, a->A >> b->A);   // Perform bitwise right shift
+
+    return  A;
+}
+// Overloading the right shift assignment operator (>>=)
+static void     O(A *a, A *B) {a->A >>= B->A;}  // Perform bitwise right shift and assign
 static void     Destroy(A *A[], size_t a) {for (size_t B = 0; B < a; B++) LocalFree(A[B]);}
 int             main()
 {
-    srand((unsigned int)time(0));
+    srand((unsigned int)_time64(0));
 
-    A       *O = NULL, *o = NULL, *P = NULL;
-    O       = B(O, (char)rand());
+    A       *o = NULL, *P = NULL, *p = NULL;
     o       = B(o, (char)rand());
     P       = B(P, (char)rand());
-    A       *(*p[])(A *a, A *B) = {C, C};
-    A       *Q = (p[0](O, o), p[1](o, P));
+    p       = B(p, (char)rand());
+    A       *(*Q[])(A *a, A *B) = {C, C};
+    A       *q = (Q[0](o, P), Q[1](P, p));
 
-    fprintf_s(stdout, "Result value: %d\n", Q->A);
-    fprintf_s(stdout, "Logical NOT of Q: %s\n", Q->A ? "true" : "false");   // Will print true or false based on the value of Q->A
+    fprintf_s(stdout, "Result value: %d\n", q->A);
+    fprintf_s(stdout, "Logical NOT of q: %s\n", q->A ? "true" : "false");   // Will print true or false based on the value of q->A
     // Testing the inequality operator
-    fprintf_s(stdout, "Q != o: %s\n", Q->A != o->A ? "true" : "false"); // Will print true or false based on inequality of Q->A and o->A
+    fprintf_s(stdout, "q != P: %s\n", q->A != P->A ? "true" : "false"); // Will print true or false based on inequality of q->A and P->A
 
     // Testing the modulus operator
-    A       *q = c(Q, o);
+    A       *R = c(q, P);
     
-    fprintf_s(stdout, "Q %% o: %d\n", q->A);  // Print modulus result
+    fprintf_s(stdout, "q %% P: %d\n", q->A);  // Print modulus result
     
     // Testing the modulus assignment operator (%=)
-    D(Q, o);
+    D(q, P);
 
-    fprintf_s(stdout, "Q after Q %%= o: %d\n", Q->A);  // Print updated Q->A after %=
+    fprintf_s(stdout, "q after q %%= P: %d\n", q->A);  // Print updated q->A after %=
 
     // Testing the bitwise AND operator (&)
-    A       *R = d(Q, o);
+    A       *r = d(q, P);
 
-    fprintf_s(stdout, "Q & o: %d\n", R->A);   // Print bitwise AND result
+    fprintf_s(stdout, "q & P: %d\n", r->A);   // Print bitwise AND result
 
     // Testing the address-of operator (&)
-    A       *r = E(Q);
+    A       *S = E(q);
 
-    fprintf_s(stdout, "Memory address of o: %p\n", r);    // Print address of Q
+    fprintf_s(stdout, "Memory address of P: %p\n", r);    // Print address of q
     // Testing the logical AND operator (&&)
-    fprintf_s(stdout, "Q && o: %s\n", Q->A && o->A ? "true" : "false");  // Logical AND result
+    fprintf_s(stdout, "q && P: %s\n", q->A && P->A ? "true" : "false");  // Logical AND result
 
     // Testing the bitwise AND assignment operator (&=)
-    e(Q, o);
+    e(q, P);
 
-    fprintf_s(stdout, "Q after Q &= o: %d\n", Q->A);  // Print updated Q->A after &=
+    fprintf_s(stdout, "q after q &= P: %d\n", q->A);  // Print updated q->A after &=
 
     // Testing the function call operator ()
-    A       *S = F(Q, o);
+    A       *s = F(q, P);
 
-    fprintf_s(stdout, "Q(O): %d\n", S->a);  // Print function call result
+    fprintf_s(stdout, "q(P): %d\n", s->a);  // Print function call result
     // Testing cast operators
-    fprintf_s(stdout, "Casting Q to int: %d\n", (int)Q->A);
-    fprintf_s(stdout, "Casting Q to bool: %s\n", (bool)Q->A ? "true" : "false");
+    fprintf_s(stdout, "Casting q to int: %d\n", (int)q->A);
+    fprintf_s(stdout, "Casting q to bool: %s\n", (bool)q->A ? "true" : "false");
 
     // Testing multiplication operator
-    A       *s = f(Q, o);
+    A       *T = f(q, P);
     
-    fprintf_s(stdout, "Q * o: %d\n", s->a);
+    fprintf_s(stdout, "q * P: %d\n", T->a);
 
-    char    *T = &s->A;
+    char    *t = &T->A;
 
-    fprintf_s(stdout, "Value of s: %d\n", *T);  // Dereferencing s
+    fprintf_s(stdout, "Value of s: %d\n", *t);  // Dereferencing T
     
     // Testing multiplication assignment operator
-    G(Q, o);
+    G(q, P);
 
-    fprintf_s(stdout, "Q after Q *= o: %d\n", Q->A);
+    fprintf_s(stdout, "q after q *= P: %d\n", q->A);
 
     // Testing the addition operator
-    A       *t = g(Q, o);
+    A       *U = g(q, P);
 
-    fprintf_s(stdout, "Q + o: %d\n", t->a);
+    fprintf_s(stdout, "q + P: %d\n", U->a);
 
     // Testing the unary plus operator
-    A       *U = H(Q);
+    A       *u = H(q);
 
-    fprintf_s(stdout, "Unary +Q: %d\n", U->A);
+    fprintf_s(stdout, "Unary +q: %d\n", u->A);
 
-    A       *u = NULL;
-    u       = B(u, 5);
+    A       *V = NULL;
+    V       = B(V, 5);
 
-    fprintf_s(stdout, "Before pre-increment: %d\n", u->a);
+    fprintf_s(stdout, "Before pre-increment: %d\n", V->a);
 
-    h(u);
+    h(V);
 
-    fprintf_s(stdout, "After pre-increment: %d\n", u->a);
+    fprintf_s(stdout, "After pre-increment: %d\n", V->a);
 
-    A       *V = I(u);
+    A       *v = I(V);
 
-    fprintf_s(stdout, "After post-increment, V->a (original): %d\n", V->a);
-    fprintf_s(stdout, "After post-increment, u->a (incremented): %d\n", u->a);
+    fprintf_s(stdout, "After post-increment, v->a (original): %d\n", v->a);
+    fprintf_s(stdout, "After post-increment, V->a (incremented): %d\n", v->a);
 
     // Testing the addition assignment operator
-    i(Q, o);
+    i(q, P);
 
-    fprintf_s(stdout, "Q after Q += o: %d\n", Q->A);
+    fprintf_s(stdout, "q after q += P: %d\n", q->A);
 
     // Testing the subtraction operator
-    A       *v = J(Q, o);
+    A       *W = J(q, P);
 
-    fprintf_s(stdout, "Q - o: %d\n", v->a);
+    fprintf_s(stdout, "q - P: %d\n", W->a);
 
     // Testing the unary negation operator
-    A       *W = j(Q);
+    A       *w = j(q);
 
-    fprintf_s(stdout, "Unary -Q: %d\n", W->A);
+    fprintf_s(stdout, "Unary -q: %d\n", w->A);
 
-    A       *w = NULL;
-    w       = B(w, 5);
+    A       *X = NULL;
+    X       = B(X, 5);
 
-    fprintf_s(stdout, "Before pre-decrement: %d\n", w->a);
+    fprintf_s(stdout, "Before pre-decrement: %d\n", X->a);
 
-    K(w);
+    K(X);
 
-    fprintf_s(stdout, "After pre-decrement: %d\n", w->a);
+    fprintf_s(stdout, "After pre-decrement: %d\n", X->a);
 
-    A       *X = k(w);
+    A       *x = k(X);
 
-    fprintf_s(stdout, "After post-decrement, X->a (original): %d\n", X->a);
-    fprintf_s(stdout, "After post-decrement, w->a (decremented): %d\n", w->a);
+    fprintf_s(stdout, "After post-decrement, x->a (original): %d\n", x->a);
+    fprintf_s(stdout, "After post-decrement, X->a (decremented): %d\n", X->a);
 
     // Testing the subtraction assignment operator
-    L(Q, o);
+    L(q, P);
 
-    fprintf_s(stdout, "Q after Q -= o: %d\n", Q->A);
+    fprintf_s(stdout, "q after q -= P: %d\n", q->A);
 
-    A       *x = NULL;
-    x       = B(x, 5);
+    A       *Y = NULL;
+    Y       = B(Y, 5);
 
-    fprintf_s(stdout, "Value of x->a: %d\n", x->a);
+    fprintf_s(stdout, "Value of Y->a: %d\n", Y->a);
 
-    x->a    = 10;   // Modify a through the overloaded operator
+    Y->a    = 10;   // Modify a through the overloaded operator
 
-    fprintf_s(stdout, "Updated value of x->a: %d\n", x->a);
+    fprintf_s(stdout, "Updated value of Y->a: %d\n", Y->a);
 
-    A       *Y = a();
-    A       **y = &Y;
-    Y->a    = 42;
+    A       *y = a();
+    A       **Z = &y;
+    y->a    = 42;
 
-    fprintf_s(stdout, "Y->*a: %d\n", (*y)->a);  // Outputs: 42
+    fprintf_s(stdout, "y->*a: %d\n", (*Z)->a);  // Outputs: 42
 
-    A       *Z = NULL, *z = NULL;
-    Z       = B(Z, 10);
-    z       = B(z, 2);
-    A       *AA = l(Z, z);
+    A       *z = NULL, *AA = NULL;
+    z       = B(z, 10);
+    AA      = B(AA, 2);
+    A       *Aa = l(z, AA);
 
-    fprintf_s(stdout, "Result of Z / z: %d\n", AA->A);
+    fprintf_s(stdout, "Result of z / AA: %d\n", Aa->A);
 
-    A       *Aa = NULL, *AB = NULL;
-    Aa      = B(Aa, 10);
-    AB      = B(AB, 2);
+    A       *AB = NULL, *Ab = NULL;
+    AB      = B(AB, 10);
+    Ab      = B(Ab, 2);
 
-    fprintf_s(stdout, "Before Aa /= AB: %d\n", Aa->A);
+    fprintf_s(stdout, "Before AB /= Ab: %d\n", AB->A);
 
-    M(Aa, AB);
+    M(AB, Ab);
 
-    fprintf_s(stdout, "After Aa /= AB: %d\n", Aa->A);
+    fprintf_s(stdout, "After AB /= Ab: %d\n", AB->A);
 
-    A       *Ab = NULL, *AC = NULL;
-    Ab      = B(Ab, 10);
-    AC      = B(AC, 15);
+    A       *AC = NULL, *Ac = NULL;
+    AC      = B(AC, 10);
+    Ac      = B(Ac, 15);
 
-    fprintf_s(stdout, "Ab < AC: %s\n", Ab->A < AC->A ? "true" : "false");
+    fprintf_s(stdout, "AC < Ac: %s\n", AC->A < Ac->A ? "true" : "false");
 
-    A       *Ac = NULL;
-    Ac      = B(Ac, 5); // 5 in binary: 00000101
-    A       *AD = m(Ac, 2); // Perform left shift by 2 bits, result is 20 (binary: 00010100)
+    A       *AD = NULL;
+    AD      = B(AD, 5); // 5 in binary: 00000101
+    A       *Ad = m(AD, 2); // Perform left shift by 2 bits, result is 20 (binary: 00010100)
 
-    fprintf_s(stdout, "Ac: %d\n", AD->A);   // Output: 20
+    fprintf_s(stdout, "Ad->A: %d\n", Ad->A);   // Output: 20
 
-    A       *Ad = NULL;
-    Ad      = B(Ad, 5); // 5 in binary: 00000101
+    A       *AE = NULL;
+    AE      = B(AE, 5); // 5 in binary: 00000101
 
-    fprintf_s(stdout, "Before <<= : %d\n", Ad->A);
+    fprintf_s(stdout, "Before <<= : %d\n", AE->A);
 
-    N(Ad, 2);   // Left shift by 2 bits
+    N(AE, 2);   // Left shift by 2 bits
 
-    fprintf_s(stdout, "After <<= : %d\n", Ad->A);   // Output: 20 (binary: 00010100)
+    fprintf_s(stdout, "After <<= : %d\n", AE->A);   // Output: 20 (binary: 00010100)
 
-    A       *AE = NULL, *Ae = NULL;
-    AE      = B(AE, 5);     // 5 in decimal
-    Ae      = B(Ae, 10);    // 10 in decimal
+    A       *Ae = NULL, *AF = NULL;
+    Ae      = B(Ae, 5);     // 5 in decimal
+    AF      = B(AF, 10);    // 10 in decimal
 
-    fprintf_s(stdout, "AE <= Ae: %s\n", AE->A <= Ae->A ? "true" : "false"); // Output: true
+    fprintf_s(stdout, "Ae <= AF: %s\n", Ae->A <= AF->A ? "true" : "false"); // Output: true
 
-    A       *AF = NULL, *Af = NULL;
-    AF      = B(AF, 5); // 5 in decimal
-    Af      = B(Af, 10);    // 10 in decimal
+    A       *Af = NULL, *AG = NULL;
+    Af      = B(Af, 5); // 5 in decimal
+    AG      = B(AG, 10);    // 10 in decimal
 
-    fprintf_s(stdout, "Before assignment: AF->a = %d\n", AF->A);    // Output: 5
-    fprintf_s(stdout, "Before assignment: Af->a = %d\n", Af->A);    // Output: 10
+    fprintf_s(stdout, "Before assignment: Af->a = %d\n", Af->A);    // Output: 5
+    fprintf_s(stdout, "Before assignment: AG->a = %d\n", AG->A);    // Output: 10
 
-    memcpy_s(AF, sizeof(A), Af, sizeof(A)); // Assign Af to AF
+    memcpy_s(Af, sizeof(A), AG, sizeof(A)); // Assign AG to Af
 
-    fprintf_s(stdout, "After assignment: AF->a = %d\n", AF->A); // Output: 10
+    fprintf_s(stdout, "After assignment: Af->a = %d\n", Af->A); // Output: 10
 
-    A       *AG = NULL, *Ag = NULL, *AH = NULL;
-    AG      = B(AG, 5); // 5 in decimal
+    A       *Ag = NULL, *AH = NULL, *Ah = NULL;
     Ag      = B(Ag, 5); // 5 in decimal
-    AH      = B(AH, 10);    // 10 in decimal
-
-    fprintf_s(stdout, "AG == Ag: %s\n", AG->A == Ag->A ? "true" : "false"); // Output: true
-    fprintf_s(stdout, "AG == AH: %s\n", AG->A == AH->A ? "true" : "false"); // Output: false
-
-    A       *Ah = NULL, *AI = NULL;
+    AH      = B(AH, 5); // 5 in decimal
     Ah      = B(Ah, 10);    // 10 in decimal
-    AI      = B(AI, 5); // 5 in decimal
 
-    fprintf_s(stdout, "Ah > AI: %s\n", Ah->A > AI->A ? "true" : "false");   // Output: true
-    fprintf_s(stdout, "AI > Ah: %s\n", AI->A > Ah->A ? "true" : "false");   // Output: false
+    fprintf_s(stdout, "Ag == AH: %s\n", Ag->A == AH->A ? "true" : "false"); // Output: true
+    fprintf_s(stdout, "Ag == Ah: %s\n", Ag->A == Ah->A ? "true" : "false"); // Output: false
 
-    A       *Ai = NULL, *AJ = NULL, *Aj = NULL;
-    Ai      = B(Ai, 10);    // 10 in decimal
+    A       *AI = NULL, *Ai = NULL;
+    AI      = B(AI, 10);    // 10 in decimal
+    Ai      = B(Ai, 5); // 5 in decimal
+
+    fprintf_s(stdout, "AI > Ai: %s\n", AI->A > Ai->A ? "true" : "false");   // Output: true
+    fprintf_s(stdout, "Ai > AI: %s\n", Ai->A > AI->A ? "true" : "false");   // Output: false
+
+    A       *AJ = NULL, *Aj = NULL, *AK = NULL;
     AJ      = B(AJ, 10);    // 10 in decimal
-    Aj      = B(Aj, 5); // 5 in decimal
+    Aj      = B(Aj, 10);    // 10 in decimal
+    AK      = B(AK, 5); // 5 in decimal
 
-    fprintf_s(stdout, "Ai >= AJ: %s\n", Ai->A >= AJ->A ? "true" : "false"); // Output: true
-    fprintf_s(stdout, "Ai >= Aj: %s\n", Ai->A >= Aj->A ? "true" : "false"); // Output: true
-    fprintf_s(stdout, "Aj >= Ai: %s\n", Aj->A >= Ai->A ? "true" : "false"); // Output: false
+    fprintf_s(stdout, "AJ >= Aj: %s\n", AJ->A >= Aj->A ? "true" : "false"); // Output: true
+    fprintf_s(stdout, "AJ >= AK: %s\n", AJ->A >= AK->A ? "true" : "false"); // Output: true
+    fprintf_s(stdout, "AK >= AJ: %s\n", AK->A >= AJ->A ? "true" : "false"); // Output: false
 
-    A       *All[] = {O, o, P, q, R, S, t, U, u, V, W, w, X, x, Y, Z, z, AA, Aa, AB, Ab, AC, Ac, Ad, AE, Ae, AF, Af, AG, Ag, AH, Ah, AI, Ai, AJ, Aj};
+    A       *Ak = NULL, *AL = NULL, *Al = NULL;
+    Ak      = B(Ak, 16);    // 16 in decimal (0b10000)
+    AL      = B(AL, 2); // Shift by 2 bits
+    Al      = n(Ak, AL);
+
+    fprintf_s(stdout, "16 >> 2 = %d\n", AL->A);
+    // Output: 16 >> 2 = 4  (0b10000 >> 2 = 0b100)
+
+    A       *AM = NULL, *Am = NULL;
+    AM      = B(AM, 16);    // 16 in decimal (0b10000)
+    Am      = B(Am, 2); // Shift by 2 bits
+
+    O(AM, Am);
+
+    fprintf_s(stdout, "16 >>= 2 = %d\n", AM->A);
+    // Output: 16 >>= 2 = 4  (0b10000 >> 2 = 0b100)
+
+    A       *AN = NULL;
+    AN      = B(AN, 5); // A = 5, a = 0
+    short   *An[] = {(short*)&AN->A, &AN->a};
+    *An[1]  = 10;   // Set a to 10
+
+    fprintf_s(stdout, "AN[0] = %d\n", *An[0] ? *An[0] : 0); // Access 'A'
+    fprintf_s(stdout, "AN[1] = %d\n", *An[1] ? *An[1] : 0); // Access 'a'
+    // Out-of-bounds access (returns 0)
+    fprintf_s(stdout, "AN[2] = %d\n", *An[2] ? 0 : 0);
+
+    A       *All[] = {o, P, p, R, r, s, U, u, V, W, w, X, x, Y, y, z, AA, Aa, AB, Ab, AC, Ac, AD, AE, Ae, AF, Af, AG, Ag, AH, Ah, AI, Ai, AJ, Aj, AK, Ak, AL, Al, AM, Am, AN};
 
     Destroy(All, sizeof(All) / sizeof(All[0]));
 

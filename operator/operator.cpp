@@ -1,6 +1,5 @@
 #include <iostream>
 #include <random>
-#include <ctime>
 #include <Windows.h>
 
 using namespace std;
@@ -206,10 +205,53 @@ class   A
         bool                operator>(const A &A) const noexcept {return a > A.a;}  // Compare based on 'a' value
         // Overloading the greater than or equal to operator (>=)
         bool                operator>=(const A &A) const noexcept {return a >= A.a;}    // Compare based on 'a' value
+        // Overloading the right shift operator (>>)
+        A                   operator>>(const A &B) const noexcept {return A(static_cast<char>(a >> B.a));}  // Perform bitwise right shift
+        // Overloading the right shift assignment operator (>>=)
+        A                   &operator>>=(const A &A) noexcept
+        {
+            a       >>= A.a;    // Perform bitwise right shift and assign
+
+            return  *this;
+        }
+        // Overloading the array subscript operator []
+        short               &operator[](size_t A) noexcept
+        {
+            static short    b;
+
+            switch          (A)
+            {
+                case 0:
+                    b       = a;
+
+                    return  b;
+                case 1:
+                    return B;
+                default:
+                    b       = 0;  // Return reference to a static variable for out-of-bounds access
+            
+                    return  b;
+            }        
+        }
+        // Overloading the array subscript operator [] (const version)
+        const short         &operator[](size_t A) const noexcept
+        {
+            static const short  b = 0, C = a;
+            
+            switch              (A)
+            {
+                case 0:
+                    return C;
+                case 1:
+                    return B;
+                default:
+                    return  b;
+            }
+        }
         char                a;
         short               B;
 };
-mt19937 a(time(nullptr));
+mt19937 a(_time64(nullptr));
 uniform_int_distribution<int>B(-128, 127);
 int     main()
 {
@@ -408,6 +450,32 @@ int     main()
     cout    << "v >= W: " << (v >= W ? "true" : "false") << endl;   // Output: true
     cout    << "v >= w: " << (v >= w ? "true" : "false") << endl;   // Output: true
     cout    << "w >= v: " << (w >= v ? "true" : "false") << endl;   // Output: false
+
+    A       X(static_cast<char>(16));   // 16 in decimal (0b10000)
+    A       x(static_cast<char>(2));    // Shift by 2 bits
+
+    A       Y = X >> x;
+
+    cout    << "16 >> 2 = " << static_cast<short>(Y.a) << endl;  
+    // Output: 16 >> 2 = 4  (0b10000 >> 2 = 0b100)
+
+    A       y(static_cast<char>(16));   // 16 in decimal (0b10000)
+    A       Z(static_cast<char>(2));    // Shift by 2 bits
+
+    y       >>= Z;
+
+    cout    << "16 >>= 2 = " << static_cast<short>(y.a) << endl;
+    // Output: 16 >>= 2 = 4  (0b10000 >> 2 = 0b100)
+
+    A       z(static_cast<char>(5));    // a = 5, B = 0
+    
+    z.B     = 10;   // Set B to 10
+
+    cout    << "z[0]: " << z[0] << endl;  // Access 'a'
+    cout    << "z[1]: " << z[1] << endl;  // Access 'B'
+
+    // Out-of-bounds access (returns 0)
+    cout    << "z[2] (out of bounds): " << z[2] << endl;
 
     ExitProcess(0);
 }
