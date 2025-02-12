@@ -17,7 +17,7 @@ int         main()
 
         cout << "This line won't execute if an exception is thrown\n";
     }
-    catch(runtime_error &A)    {cout << A.what() << "\n";}
+    catch(runtime_error &A)     {cout << A.what() << "\n";}
     catch(...)                  {cout << "Unknown exception\n";}
 
     cout                        << "Continue\n";

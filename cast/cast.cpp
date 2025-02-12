@@ -4,9 +4,19 @@
 
 using namespace std;
 
-class   Base {public: virtual ~Base() {}};  // Necessary for dynamic_cast
-class   Derived : public Base {public: void show() {cout << "Derived class\n";}};
-void    print(int* ptr) {cout << "Const_cast value: " << *ptr << '\n';}
+class   Base
+{
+    public:
+        Base()  noexcept = default;
+        virtual ~Base() noexcept = default;
+}; // Necessary for dynamic_cast
+class   Derived : public Base
+{
+    public:
+        ~Derived()  noexcept = default;
+        void show() noexcept {cout << "Derived class\n";}
+};
+void    print(int *ptr) noexcept {cout << "Const_cast value: " << *ptr << '\n';}
 int     main()
 {
     // static_cast (Safe conversions)

@@ -3,7 +3,8 @@
 
 using namespace std;
 
-int main()
+// This function is guaranteed not to throw exceptions
+int main() noexcept
 {
     cout    << "Hello, World!" << endl;
     

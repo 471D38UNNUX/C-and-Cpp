@@ -14,9 +14,8 @@ class           A
     public:
         /* 
         Default constructor only declared from base class.
-        Every class was created the constructor always auto called.
-        This function is guaranteed not to throw exceptions. */
-        A()                                                     noexcept {}
+        Every class was created the constructor always auto called. */
+        A()                                                     noexcept = default;
         /*
         Constructor with custom parameters.
         This explicit mean the parameters must be defined every calling this constructor.
@@ -64,7 +63,7 @@ class           A
         /*
         Every class was destroyed the destructor always auto called.
         This virtual polymorphism prevent undefined behavior destructor when class was derived. */
-        virtual ~A()                                            noexcept {}
+        virtual ~A()                                            noexcept = default;
         bool                                                    G;
         void                                                    g(char A, short a) noexcept {H = A, I = a;}
         void                                                    g() noexcept {cout << G << "\n" << static_cast<short>(H) << "\n" << static_cast<short>(h) << "\n" << I << "\n";}
@@ -109,7 +108,7 @@ class           a : virtual public A
             
             return  *this;
         }
-        virtual ~a()                                            noexcept {}
+        virtual ~a()                                            noexcept = default;
         /* This static member must be defined in global */
         static unsigned short                                   J;
         static void                                             j() noexcept {cout << J << "\n";}
@@ -147,7 +146,7 @@ class           B : virtual public A, virtual protected a
             
             return  *this;
         }
-    virtual ~B()                                                noexcept {}
+    virtual ~B()                                                noexcept = default;
     /* Define pure virtual polymorphism function to create abstract class which can't be created directly and must be derived to override polymorphism this function */
     virtual void                                                K(int A) = 0;
     /* This final mean this function can't be override polymorphism anymore */
@@ -193,7 +192,7 @@ class               b : virtual public A, virtual protected a, B
             
             return  *this;
         }
-        virtual ~b()                                            noexcept {}
+        virtual ~b()                                            noexcept = default;
         /* Override pure virtual polymorphism function */
         void                                                    K(int A) noexcept final override {k = A;}
         void                                                    l() noexcept {g();}
@@ -202,8 +201,8 @@ class               b : virtual public A, virtual protected a, B
 class               C
 {
     public:
-        C()             noexcept {}
-        ~C()            noexcept {}
+        C()             noexcept = default;
+        ~C()            noexcept = default;
         virtual void    A(unsigned int A) noexcept final {e = A;}
         virtual void    A() noexcept final {cout << e << "\n";}
         unsigned int    e;
@@ -211,7 +210,7 @@ class               C
 /* This access control default is public */
 struct              c
 {
-    c()                                                                 {}
+    c()                                                                 noexcept = default;
     explicit c(long long A, unsigned long long a, float B, double b)    noexcept : m(A), n(a), O(B), o(b) {}
     explicit c(const c &A)                                              noexcept : m(A.m), n(A.n), O(A.O), o(A.o) {}
     explicit c(c &&A)                                                   noexcept : m(std::move(A.m)), n(std::move(A.n)), O(std::move(A.O)), o(std::move(A.o)) {}
@@ -246,7 +245,7 @@ struct              c
 
         return  *this;
     }
-    virtual ~c()                                                        noexcept {}
+    virtual ~c()                                                        noexcept = default;
     long long                                                           m;
     void                                                                N(unsigned long long A, double a) noexcept {n = A, o = a;}
     void                                                                N() noexcept {cout << m << "\n" << n << "\n" << setprecision(6) << O << "\n" << setprecision(15) << o << "\n";}
@@ -293,7 +292,7 @@ struct              D : virtual b, virtual c
 
         return  *this;
     }
-    virtual ~D()                                                                                        noexcept {}
+    virtual ~D()                                                                                        noexcept = default;
 };
 struct              d : virtual D
 {
@@ -335,7 +334,7 @@ struct              d : virtual D
         
         return  *this;
     }
-    virtual ~d()                                                                                                noexcept {}
+    virtual ~d()                                                                                                noexcept = default;
     static class                                                                                                C *Q;
     static void                                                                                                 q(unsigned int A) noexcept {Q->A(A);}
     static void                                                                                                 q() noexcept {Q->A();}
@@ -343,8 +342,8 @@ struct              d : virtual D
 C                   *d::Q;
 struct              E
 {
-        E()             noexcept {}
-        ~E()            noexcept {}
+        E()             noexcept = default;
+        ~E()            noexcept = default;
         union           A
         {
             char        A[16];
@@ -392,7 +391,7 @@ struct              e : virtual D, virtual protected d
 
         return  *this;
     }
-    virtual ~e()                                                                                                noexcept {}
+    virtual ~e()                                                                                                noexcept = default;
     virtual void                                                R(char A, char a) = 0;
     virtual void                                                R(short A, char a) = 0;
     virtual void                                                R(int A, char a) = 0;
@@ -449,9 +448,9 @@ struct              F : virtual D, virtual protected d, private e
     void                                                                                                        R(long long A, char a) noexcept final override {this->r.A(A, a);}
     void                                                                                                        s() noexcept {N();}
     void                                                                                                        R() noexcept {this->r.A();}
-    ~F()                                                                                                        noexcept {}
+    ~F()                                                                                                        noexcept = default;
 };
-int             main()
+int             main() noexcept
 {
     /* Create class with explicit custom parameter */
     F       A(true, -128, 255, -32768, 0x8000000000000000, 0xffffffffffffffff, 0.999999f, 0.999999999999999);
@@ -510,9 +509,9 @@ int             main()
     d.R();
 
     /* Destroy class with calling destructor */
-    delete  B;
-    delete  d::Q;
     delete  D;
+    delete  d::Q;
+    delete  B;
 
     ExitProcess(0);
 }

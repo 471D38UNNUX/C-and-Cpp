@@ -8,7 +8,7 @@ class   A
 {
     public:
         // Constructor
-        A()                 noexcept {}
+        A()                 noexcept = default;
         explicit A(char A)  noexcept : a(A), B(0) {}
         explicit A(short A) noexcept : a(0), B(A) {}
         // Overloading the comma operator
@@ -18,7 +18,7 @@ class   A
 
             return  A;  // Return the right-hand operand
         };
-        ~A()                noexcept {}
+        ~A()                noexcept = default;
         // Overloading the logical NOT operator (!)
         bool                operator!() const noexcept {return !a;} // Return true if 'a' is 0, else false
         // Overloading the inequality operator (!=)
@@ -248,12 +248,23 @@ class   A
                     return  b;
             }
         }
+        // Overloading the bitwise XOR operator (^)
+        A                   operator^(const A &B) const noexcept {return A(static_cast<char>(a ^ B.a));}
+        // Overloading the bitwise XOR assignment operator (^=)
+        A                   &operator^=(const A &A) noexcept
+        {
+            a       ^= A.a; // Perform bitwise XOR and update 'a'
+            
+            return  *this;
+        }
+        // Overloading the bitwise OR operator (|)
+        A                   operator|(const A &B) const noexcept {return A(static_cast<char>(a | B.a));}
         char                a;
         short               B;
 };
 mt19937 a(_time64(nullptr));
 uniform_int_distribution<int>B(-128, 127);
-int     main()
+int     main() noexcept
 {
     A       b(static_cast<char>(B(a)));
     A       C(static_cast<char>(B(a)));
@@ -476,6 +487,22 @@ int     main()
 
     // Out-of-bounds access (returns 0)
     cout    << "z[2] (out of bounds): " << z[2] << endl;
+
+    A       AA(static_cast<char>(5));
+    A       Aa(static_cast<char>(3));
+    A       AB = AA ^ Aa; // 5 ^ 3 = 6
+
+    cout    << "AA ^ Aa: " << static_cast<short>(AB.a) << endl;
+
+    AA      ^= Aa;  //  AA ^= Aa
+    
+    cout    << "AA after AA ^= Aa: " << static_cast<short>(AA.a) << endl;
+
+    A       Ab(static_cast<char>(5));
+    A       AC(static_cast<char>(3));
+    A       Ac = Ab | AC;   // 5 | 3 = 7
+
+    cout    << "Ab | AC: " << static_cast<short>(Ac.a) << endl;
 
     ExitProcess(0);
 }

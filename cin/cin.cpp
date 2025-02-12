@@ -4,7 +4,7 @@
 using namespace std;
 
 char    * msg;
-int     main()
+int     main() noexcept
 {
     cin.getline(msg, 16);
 

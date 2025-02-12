@@ -5,7 +5,7 @@ using namespace std;
 
 struct  Example
 {
-    Example()           noexcept {}  // Default constructor is noexcept
+    Example()           noexcept = default; // Default constructor is noexcept
 
     Example(Example&&)  noexcept {cout << "Move constructor called\n"; }
 

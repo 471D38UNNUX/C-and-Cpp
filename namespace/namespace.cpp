@@ -8,9 +8,9 @@ namespace   MyNamespace
 {
     int     myNumber = 42;
 
-    void    display() {cout << "My number is: " << myNumber << endl;}
+    void    display() noexcept {cout << "My number is: " << myNumber << endl;}
 }
-int         main()
+int         main() noexcept
 {
     // Accessing the namespace members using the scope resolution operator (::)
     MyNamespace::display();

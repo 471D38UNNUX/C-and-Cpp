@@ -4,7 +4,7 @@
 
 using namespace std;
 
-int main()
+int main() noexcept
 {
     vector<int> numbers = {1, 2, 3, 4, 5};
 

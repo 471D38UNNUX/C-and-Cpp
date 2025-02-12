@@ -73,10 +73,8 @@ A               *E(A *A, bool a, char B, unsigned char b, short c)
 
     return  A;
 }
-/* This function as destructor */
-static void     e(A *A[], size_t a) {for (size_t B = 0; B < a; B++) CoTaskMemFree(A[B]);}
-static void     F(a *A) {fprintf(stdout, "%u\n", A->a);}
-a               *f(A *A, bool B, char b, unsigned char C, short c)
+static void     e(a *A) {fprintf(stdout, "%u\n", A->a);}
+a               *F(A *A, bool B, char b, unsigned char C, short c)
 {
     A       = E(A, B, b, C, c);
 
@@ -85,20 +83,20 @@ a               *f(A *A, bool B, char b, unsigned char C, short c)
     if      (!D) ExitProcess(1);
 
     D->A    = A;
-    D->B    = F;
+    D->B    = e;
 
     return  D;
 }
-static void     G(A *A[], size_t B, a *b[], size_t C)
+/* This function as destructor */
+static void     f(A *A, a *a)
 {
-    e(A, B);
-
-    for (size_t c = 0; c < C; c++) CoTaskMemFree(b[c]);
+    CoTaskMemFree(A);
+    CoTaskMemFree(a);
 }
-static void     g(A *A, unsigned char a) {A->C = a;}
-B               *H(A *A, a *a, bool b, char C, unsigned char c, short D)
+static void     G(A *A, unsigned char a) {A->C = a;}
+B               *g(A *A, a *a, bool b, char C, unsigned char c, short D)
 {
-    a       = f(A, b, C, c, D);
+    a       = F(A, b, C, c, D);
 
     B       *d= CoTaskMemAlloc(sizeof(B));
 
@@ -106,22 +104,22 @@ B               *H(A *A, a *a, bool b, char C, unsigned char c, short D)
 
     d->A    = a->A;
     d->a    = a;
-    d->b    = g;
+    d->b    = G;
 
     return  d;
 }
-static void     h(A *A[], size_t b, a *C[], size_t c, B *D[], size_t d)
+static void     H(A *A, a *a, B *B)
 {
-    G(A, b, C, c);
+    f(A, a);
 
-    for (size_t E = 0; E < d; E++) CoTaskMemFree(D[E]);
+    CoTaskMemFree(B);
 }
-static void     I(struct B *A, int a) {A->C = a;}
-static void     i(A *A) {A->B(A);}
-static void     J(B *A) {fprintf(stdout, "%d\n", A->C);}
-b               *j(A *A, a *a, B *B, bool C, char c, unsigned char D, short d)
+static void     h(struct B *A, int a) {A->C = a;}
+static void     I(A *A) {A->B(A);}
+static void     i(B *A) {fprintf(stdout, "%d\n", A->C);}
+b               *J(A *A, a *a, B *B, bool C, char c, unsigned char D, short d)
 {
-    B       = H(A, a, C, c, D, d);
+    B       = g(A, a, C, c, D, d);
 
     b       *E = CoTaskMemAlloc(sizeof(b));
 
@@ -132,114 +130,105 @@ b               *j(A *A, a *a, B *B, bool C, char c, unsigned char D, short d)
     E->B    = B;
     /* Override polymorphism function pointer */
     E->B->B = E->b;
-    E->b    = I;
-    E->C    = i;
-    E->c    = J;
+    E->b    = h;
+    E->C    = I;
+    E->c    = i;
 
     return  E;
 }
-static void     K(A *A[], size_t C, a *c[], size_t D, B *d[], size_t E, b *e[], size_t F)
+static void     j(A *A, a *a, B *B, b *b[], size_t C)
 {
-    h(A, C, c, D, d, E);
+    H(A, a, B);
 
-    for (size_t f = 0; f < F; f++) CoTaskMemFree(e[f]);
+    for (size_t c = 0; c < C; c++) CoTaskMemFree(b[c]);
 }
-static void     k(struct C *A, unsigned int a) {A->B = a;}
-static void     L(struct C *A) {fprintf(stdout, "%u\n", A->B);}
-C               *l()
+static void     K(struct C *A, unsigned int a) {A->B = a;}
+static void     k(struct C *A) {fprintf(stdout, "%u\n", A->B);}
+C               *L()
 {
     C       *A = CoTaskMemAlloc(sizeof(C));
 
     if      (!A) ExitProcess(1);
     
-    A->A    = k;
-    A->a    = L;
+    A->A    = K;
+    A->a    = k;
 
     return  A;
 };
-static void     M(C *A[], size_t a) {for (size_t B = 0; B < a; B++) CoTaskMemFree(A[B]);}
 int             main()
 {
-    A       *A = NULL;
-    a       *a = NULL;
-    B       *B = NULL;
     /* Create struct with explicit custom parameter */
-    b       *c = j(A, a, B, true, -128, 255, -32768);
+    b       *A = J(NULL, NULL, NULL, true, -128, 255, -32768);
     /* Shallow copy constructor */
-    b       *D = c;
+    b       *a = A;
     /* Deep copy constructor */
-    b       *d = CoTaskMemAlloc(sizeof(b));
+    b       *B = CoTaskMemAlloc(sizeof(b));
     
-    if      (!d) ExitProcess(1);
+    if      (!B) ExitProcess(1);
     
     /*
     Copy assignment.
     Shallow copy constructor. */
-    memcpy_s(d, sizeof(b), D, sizeof(b));
+    memcpy_s(B, sizeof(b), a, sizeof(b));
 
-    b       *E = j(A, a, B, false, -128, 255, -32768);
+    b       *c = J(NULL, NULL, NULL, false, -128, 255, -32768);
     
     /*
     Copy assignment.
     Deep copy constructor. */
-    memcpy_s(E, sizeof(b), d, sizeof(b));
+    memcpy_s(c, sizeof(b), B, sizeof(b));
 
-    E->C(E->A);
+    c->C(c->A);
     
-    E->a->a = 65535;
+    c->a->a = 65535;
     
-    E->a->B(E->a);
+    c->a->B(c->a);
     
-    E->b(E->B, -2147483648);
+    c->b(c->B, -2147483648);
     
-    E->c(E->B);
+    c->c(c->B);
 
-    C       *e = l();
+    C       *D = L();
 
-    e->A(e, 4294967295);
+    D->A(D, 4294967295);
 
-    e->a(e);
+    D->a(D);
 
-    b       *F = j(A, a, B, false, 127, 0, 32767);
+    b       *d = J(NULL, NULL, NULL, false, 127, 0, 32767);
     /* Move constructor */
-    b       *f = F;
-    F       = NULL;
-    b       *G = CoTaskMemAlloc(sizeof(b));
+    b       *E = d;
+    d       = NULL;
+    b       *e = CoTaskMemAlloc(sizeof(b));
     
-    if      (!G) ExitProcess(1);
+    if      (!e) ExitProcess(1);
 
     /* Move assignment */
-    memcpy_s(G, sizeof(b), f, sizeof(b));
+    memcpy_s(e, sizeof(b), E, sizeof(b));
 
-    f       = NULL;
-    b       *g = j(A, a, B, true, 127, 0, 32767);
+    E       = NULL;
+    b       *F = J(NULL, NULL, NULL, true, 127, 0, 32767);
 
     /* Move assignment */
-    memcpy_s(g, sizeof(b), G, sizeof(b));
+    memcpy_s(g, sizeof(b), e, sizeof(b));
 
-    G       = NULL;
+    e       = NULL;
 
-    g->C(g->A);
+    F->C(F->A);
     
-    g->a->a = 0;
+    F->a->a = 0;
     
-    g->a->B(g->a);
+    F->a->B(F->a);
     
-    g->b(g->B, 2147483647);
+    F->b(F->B, 2147483647);
     
-    g->c(g->B);
+    F->c(F->B);
 
     /* Destroy struct with calling destructor */
-    
-    struct A    *H[] = {A};
-    struct a    *h[] = {a};
-    struct B    *I[] = {B};
-    struct b    *i[] = {c, d, E, g};
-    struct C    *J[] = {e};
+    CoTaskMemFree(e);
 
-    K(H, sizeof(H) / sizeof(H[0]), h, sizeof(h) / sizeof(h[0]), I, sizeof(I) / sizeof(I[0]), i, sizeof(i) / sizeof(i[0]));
+    struct b    *i[] = {A, B, c, F};
 
-    M(J, sizeof(J) / sizeof(J[0]));
+    j(NULL, NULL, NULL, i, sizeof(i) / sizeof(i[0]));
 
     ExitProcess(0);
 }
