@@ -12,7 +12,7 @@ jmp_buf         buf;
 char            noexcept, jmp;
 static void     riskyFunction()
 {
-    if (jmp) longjmp(buf, 1);
+    longjmp(buf, 1);
     
     fprintf_s(stderr, "Error!");
 }

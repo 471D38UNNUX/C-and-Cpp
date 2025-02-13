@@ -53,9 +53,6 @@ const char      *typeidname(type_info value)
     }
 }
 jmp_buf         cast;
-jmp_buf         typeid;
-char            castvalue;
-char            typeidvalue;
 int             main()
 {
     // static_cast (Safe conversions)
@@ -95,10 +92,8 @@ int             main()
 
     print(modifiableNum);
 
-    castvalue       = setjmp(cast);
-
     // bad_cast with dynamic_cast (Reference cast failure)
-    if              (!castvalue)
+    if              (!setjmp(cast))
     {
         Derived *ref = (Derived*)b3;
 
@@ -106,13 +101,11 @@ int             main()
     }
     else            {fprintf(stderr, "bad_cast caught: Bad dynamic_cast!\n");}
 
-    typeidvalue     = setjmp(typeid);
-
-    if              (!typeidvalue)
+    if              (!setjmp(cast))
     {
         Base    *ptr = NULL;
 
-        if      (!ptr) longjmp(typeid, 1);
+        if      (!ptr) longjmp(cast, 1);
 
         fprintf(stdout, "%s\n", typeidname(ptr->type));
     }

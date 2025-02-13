@@ -259,6 +259,17 @@ class   A
         }
         // Overloading the bitwise OR operator (|)
         A                   operator|(const A &B) const noexcept {return A(static_cast<char>(a | B.a));}
+        // Overloading the bitwise OR assignment operator (|=)
+        A                   &operator|=(const A &A) noexcept
+        {
+            a       |= A.a; // Perform bitwise OR and update 'a'
+
+            return  *this;
+        }
+        // Overloading the logical OR operator (||)
+        bool                operator||(const A &A) const noexcept {return a || A.a;}
+        // Overloading the one's complement operator (~)
+        A                   operator~() const noexcept { return A(static_cast<char>(~a)); }
         char                a;
         short               B;
 };
@@ -503,6 +514,21 @@ int     main() noexcept
     A       Ac = Ab | AC;   // 5 | 3 = 7
 
     cout    << "Ab | AC: " << static_cast<short>(Ac.a) << endl;
+
+    Ab       |= AC;  // Ab |= AC
+
+    cout << "Ab after Ab |= AC: " << static_cast<short>(Ab.a) << endl;
+
+    A       AD(static_cast<char>(5));
+    A       Ad(static_cast<char>(0));
+
+    if      (AD || Ad) cout << "Logical OR is true\n";
+    else    cout << "Logical OR is false\n";
+
+    A       AE(static_cast<char>(5));
+    A       Ae = ~AE;
+
+    cout    << static_cast<short>(Ae.a) << endl;
 
     ExitProcess(0);
 }

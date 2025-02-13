@@ -385,7 +385,22 @@ int             main()
 
     fprintf_s(stdout, "Ai | AJ: %d\n", Aj->A);
 
-    A       *All[] = {h, I, j, K, k, l, N, n, O, P, p, Q, q, R, r, s, T, t, U, u, V, v, W, X, x, Y, y, Z, z, AA, Aa, AB, Ab, AC, Ac, AD, Ad, AE, Ae, AF, Af, AG, AH, Ah, Ai, AJ, Aj};
+    Ai->A   |= AJ->A;   // Ai |= AJ
+
+    fprintf_s(stdout, "Ai after Ai |= AJ: %d\n", Ai->A);
+
+    A       *AK = B(NULL, 5);
+    A       *Ak = B(NULL, 0);
+
+    if      (AK->A || Ak->A) fprintf_s(stdout, "Logical OR is true\n");
+    else    fprintf_s(stdout, "Logical OR is false\n");
+
+    A       *AL = B(NULL, 5);
+    A       *Al = B(NULL, ~AL->A);
+
+    fprintf_s(stdout, "%d\n", Al->A);
+
+    A       *All[] = {h, I, j, K, k, l, N, n, O, P, p, Q, q, R, r, s, T, t, U, u, V, v, W, X, x, Y, y, Z, z, AA, Aa, AB, Ab, AC, Ac, AD, Ad, AE, Ae, AF, Af, AG, AH, Ah, Ai, AJ, Aj, AK, Ak, AL, Al};
 
     Destroy(All, sizeof(All) / sizeof(All[0]));
 
