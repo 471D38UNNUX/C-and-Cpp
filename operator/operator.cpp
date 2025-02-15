@@ -9,8 +9,9 @@ class   A
     public:
         // Constructor
         A()                 noexcept = default;
-        explicit A(char A)  noexcept : a(A), B(0) {}
-        explicit A(short A) noexcept : a(0), B(A) {}
+        explicit A(char A)  noexcept : a(A), B(0), b(0) {}
+        explicit A(short A) noexcept : a(0), B(A), b(0) {}
+        explicit A(int A)   noexcept : a(0), B(0), b(A) {}
         // Overloading the comma operator
         A                   operator,(const A &A) noexcept
         {
@@ -269,9 +270,43 @@ class   A
         // Overloading the logical OR operator (||)
         bool                operator||(const A &A) const noexcept {return a || A.a;}
         // Overloading the one's complement operator (~)
-        A                   operator~() const noexcept { return A(static_cast<char>(~a)); }
+        A                   operator~() const noexcept {return A(static_cast<char>(~a));}
+        void                operator delete(void *A)
+        {
+            cout        << "operator delete called" << endl;
+
+            ::operator  delete(A);  // Directly calling global operator delete
+        }
+        void                *operator new(size_t A)
+        {
+            cout    << "operator new called, size: " << A << endl;
+
+            return  ::operator new(A);  // Directly calling global operator new
+        }
+        // Implicit conversion to int
+        operator            int()
+        {
+            cout    << "Converting to int" << endl;
+
+            return  b;
+        }
+        // Explicit conversion to double
+        explicit            operator double()
+        {
+            cout    << "Converting to double" << endl;
+
+            return  static_cast<double>(b) + 0.5;
+        }
+        // Conversion to void* (pointer)
+        operator            void*()
+        {
+            cout    << "Converting to void*" << endl;
+
+            return  this;
+        }
         char                a;
         short               B;
+        int                 b;
 };
 mt19937 a(_time64(nullptr));
 uniform_int_distribution<int>B(-128, 127);
@@ -517,7 +552,7 @@ int     main() noexcept
 
     Ab       |= AC;  // Ab |= AC
 
-    cout << "Ab after Ab |= AC: " << static_cast<short>(Ab.a) << endl;
+    cout    << "Ab after Ab |= AC: " << static_cast<short>(Ab.a) << endl;
 
     A       AD(static_cast<char>(5));
     A       Ad(static_cast<char>(0));
@@ -529,6 +564,21 @@ int     main() noexcept
     A       Ae = ~AE;
 
     cout    << static_cast<short>(Ae.a) << endl;
+
+    A       *AF = new A();
+
+    delete  AF;
+
+    A       *Af = new A(42);
+    int     AG = *Af;   // Implicit conversion
+    double  Ag = static_cast<double>(*Af);  // Explicit conversion
+    void    *AH = *Af;  // Pointer conversion
+
+    cout    << "AG: " << AG << endl;
+    cout    << "Ag: " << Ag << endl;
+    cout    << "AH: " << AH << endl;
+
+    delete  Af;
 
     ExitProcess(0);
 }
