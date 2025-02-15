@@ -449,9 +449,9 @@ int             main()
     fprintf_s(stdout, "AQ: %g\n", AQ);
     fprintf_s(stdout, "Aq: %p\n", Aq);
 
-    A       *All[] = {K, k, M, m, N, O, p, Q, q, r, S, s, T, t, U, V, v, W, w, X, x, Y, y, z, AA, Aa, AB, Ab, AC, Ac, AD, Ad, AE, Ae, AF, Af, AG, Ag, AH, Ah, AI, Ai, Aj, AK, AL, Al, AM, Am, AN, An, AO, Ao, AP};
+    A       *AR[] = {K, k, M, m, N, O, p, Q, q, r, S, s, T, t, U, V, v, W, w, X, x, Y, y, z, AA, Aa, AB, Ab, AC, Ac, AD, Ad, AE, Ae, AF, Af, AG, Ag, AH, Ah, AI, Ai, Aj, AK, AL, Al, AM, Am, AN, An, AO, Ao, AP};
 
-    I(All, sizeof(All) / sizeof(All[0]));
+    I(AR, sizeof(AR) / sizeof(AR[0]));
 
     ExitProcess(0);
 }
