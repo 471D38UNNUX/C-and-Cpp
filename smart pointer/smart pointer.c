@@ -69,7 +69,7 @@ static WeakPtr          *make_weak(shared_ptr *shared_ptr)
 }   
 static shared_ptr       *lock(WeakPtr *WeakPtr)
 {
-    if      (WeakPtr->shared_ptr && *(WeakPtr->shared_ptr->refCount) > 0) return NULL;
+    if      (WeakPtr->shared_ptr && *WeakPtr->shared_ptr->refCount > 0) return WeakPtr->shared_ptr;
 
     return  NULL;
 }
@@ -120,6 +120,7 @@ int                     main()
 
         //  After sharedPtr1 is destroyed, weakPtr will no longer be able to lock the object
         reset(sharedPtr1);  // Manually resetting sharedPtr1
+        weakPtr->shared_ptr = NULL;
 
         shared_ptr  *sharedPtr3 = lock(weakPtr);
 
