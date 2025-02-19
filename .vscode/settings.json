@@ -71,7 +71,8 @@
         "thread": "cpp",
         "xtree": "cpp",
         "stdio.h": "c",
-        "random": "cpp"
+        "random": "cpp",
+        "string.h": "c"
     },
     "C_Cpp.errorSquiggles": "disabled",
     "C_Cpp.default.compilerPath": "cl.exe"
