@@ -69,7 +69,7 @@ static void         append_repeated_char(basic_string *dest, size_t count, char 
     
     memset(new_data + dest->size - 1, char_value, count);
 
-    new_data[new_size - 1]  = '\0';
+    new_data[new_size - 1]  = 0;
 
     VirtualFree(dest->data, 0, MEM_RELEASE);
 
@@ -93,7 +93,7 @@ static void         assign_n(basic_string *dest, char *str, size_t count)
 
     strncpy_s(new_data, new_size + 1, str, new_size);
     
-    new_data[new_size]  = '\0';
+    new_data[new_size]  = 0;
 
     if                  (dest->data) VirtualFree(dest->data, 0, MEM_RELEASE);
     
@@ -116,7 +116,7 @@ static void         assign_repeat(basic_string *dest, size_t count, char ch)
 
     memset(new_data, ch, count);
     
-    new_data[count] = '\0';
+    new_data[count] = 0;
 
     if              (dest->data) VirtualFree(dest->data, 0, MEM_RELEASE);
     
@@ -134,7 +134,7 @@ int                 main()
     basic_string        *str1 = Cbasic_string("Hello", 6);
     basic_string        *str2 = Cbasic_string("World", 6);
     //  Concatenation
-    basic_string        *result = Cbasic_string("", 14);
+    basic_string        *result = Cbasic_string("", 16);
 
     _snprintf_s(result->data, result->size, _TRUNCATE, "%s, %s!", str1->data, str2->data);
 
@@ -205,7 +205,7 @@ int                 main()
     {
         size_t  len = strnlen_s(fullLine, sizeof(fullLine));
 
-        if      (len > 0 && fullLine[len - 1] == '\n') fullLine[len - 1] = '\0';
+        if      (len > 0 && fullLine[len - 1] == '\n') fullLine[len - 1] = 0;
 
         fprintf_s(stdout, "You entered: %s\n", fullLine);
     }
@@ -233,6 +233,20 @@ int                 main()
     char                thirdChar = result->data[2];
 
     fprintf_s(stdout, "Character at index 2: %c\n", thirdChar);
+
+    //  Using back function
+    char                lastChar = result->data[strnlen_s(result->data, result->size) - 1];
+
+    fprintf_s(stdout, "Last character: %c\n", lastChar);
+
+    //  Using begin function
+    char                firstChar = *result->data;
+
+    fprintf_s(stdout, "First character using begin: %c\n", firstChar);
+
+    //  Using capacity function
+
+    fprintf_s(stdout, "String capacity: %lld\n", result->size);
 
     basic_string        *All[] = {str1, str2, result, sub, numberStr, numberToStr, basicStr, appendStr, assignStr};
 

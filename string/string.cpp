@@ -94,5 +94,23 @@ int main()
 
     cout                << "Character at index 2: " << thirdChar << endl;
 
+    //  Using back function
+    char                lastChar = result.back();
+
+    cout                << "Last character: " << lastChar << endl;
+
+    //  Using begin function
+    char                firstChar = *result.begin();
+
+    cout                << "First character using begin: " << firstChar << endl;
+
+    //  Using c_str function
+    const char          *cstr = result.c_str();
+    
+    cout                << "C-style string: " << cstr << endl;
+
+    //  Using capacity function
+    cout                << "String capacity: " << result.capacity() << endl;
+
     ExitProcess(0);
 }

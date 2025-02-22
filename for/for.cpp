@@ -1,12 +1,11 @@
 #include <iostream>
-#include <vector>
 #include <Windows.h>
 
 using namespace std;
 
 int main() noexcept
 {
-    vector<int> numbers = {1, 2, 3, 4, 5};
+    int         numbers[] = {1, 2, 3, 4, 5};
 
     // 1. Basic range-based for loop (copy)
     cout << "Copy: ";
