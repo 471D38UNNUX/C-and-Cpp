@@ -129,46 +129,74 @@ static void         assign_range(basic_string *dest, char *first, char *last)
 
     assign_n(dest, first, strnlen_s(first, last - first));
 }
-int                 main()
+static int          compare(char *str1, size_t pos1, size_t num1, char *str2, size_t pos2, size_t num2)
 {
-    basic_string        *str1 = Cbasic_string("Hello", 6);
-    basic_string        *str2 = Cbasic_string("World", 6);
+    if      (!str1 || !str2) return (str1 == str2) ? 0 : (str1 ? 1 : -1);
+
+    size_t  len1 = strnlen_s(str1, 1024);
+    size_t  len2 = strnlen_s(str2, 1024);
+
+    if      (pos1 > len1) return -1;
+    if      (pos2 > len2) return 1;
+
+    char    *sub1 = str1 + pos1;
+    char    *sub2 = str2 + pos2;
+    size_t  max_cmp1 = (num1 == (size_t)-1) ? len1 - pos1 : num1;
+    size_t  max_cmp2 = (num2 == (size_t)-1) ? len2 - pos2 : num2;
+    size_t  cmp_len = (max_cmp1 < max_cmp2) ? max_cmp1 : max_cmp2;
+    int     result = strncmp(sub1, sub2, cmp_len);
+
+    if      (!result)
+    {
+        if (max_cmp1 < max_cmp2) return -1;
+        if (max_cmp1 > max_cmp2) return 1;
+    }
+
+    return  result;
+}
+static int          compare_full(char *str1, char *str2) {return compare(str1, 0, (size_t)-1, str2, 0, (size_t)-1);}
+static int          compare_substring(char *str1, size_t pos1, size_t num1, char *str2) {return compare(str1, pos1, num1, str2, 0, (size_t)-1);}
+static int          compare_substrings(char *str1, size_t pos1, size_t num1, char *str2, size_t pos2, size_t num2) {return compare(str1, pos1, num1, str2, pos2, num2);}
+int                             main()
+{
+    basic_string                *str1 = Cbasic_string("Hello", 6);
+    basic_string                *str2 = Cbasic_string("World", 6);
     //  Concatenation
-    basic_string        *result = Cbasic_string("", 16);
+    basic_string                *result = Cbasic_string("", 16);
 
     _snprintf_s(result->data, result->size, _TRUNCATE, "%s, %s!", str1->data, str2->data);
 
     fprintf_s(stdout, "%s\n", result->data);
     //  Getting string length
-    fprintf_s(stdout, "Length: %llu\n", result->size);
+    fprintf_s(stdout, "Length: %llu\n", strnlen_s(result->data, result->size));
     //  Accessing characters
     fprintf_s(stdout, "First character: %c\n", result->data[0]);
 
     //  Modifying a string
-    result->data[0]     = 'h';
+    result->data[0]             = 'h';
 
     fprintf_s(stdout, "Modified string: %s\n", result->data);
 
     //  Substring
-    basic_string        *sub = Cbasic_string("", 6);
+    basic_string                *sub = Cbasic_string("", 6);
 
     strncpy_s(sub->data, sub->size, result->data, 5);
 
     fprintf_s(stdout, "Substring: %s\n", sub->data);
 
     //  Finding a substring
-    char                *pos = strstr(result->data, "World");
+    char                        *pos = strstr(result->data, "World");
 
-    if                  (pos) fprintf_s(stdout, "'World' found at position: %llu\n", pos - result->data);
+    if                          (pos) fprintf_s(stdout, "'World' found at position: %llu\n", pos - result->data);
 
     //  Hash function (C++'s FNV-1a hash for demonstration)
-    unsigned long long  hashValue = hash(result->data);
+    unsigned long long          hashValue = hash(result->data);
 
     fprintf_s(stdout, "Hash value: %llu\n", hashValue);
     //  Swap function
     fprintf_s(stdout, "Before swap: str1 = %s, str2 = %s\n", str1->data, str2->data);
 
-    char                tmp[6];
+    char                        tmp[6];
     
     strncpy_s(tmp, sizeof(tmp), str1->data, str1->size);
     strncpy_s(str1->data, str1->size, str2->data, str2->size);
@@ -177,23 +205,23 @@ int                 main()
     fprintf_s(stdout, "After swap: str1 = %s, str2 = %s\n", str1->data, str2->data);
 
     //  Convert string to integer using strtol
-    basic_string        *numberStr = Cbasic_string("12345", 6);
-    char                *endptr;
-    int                 number = strtol(numberStr->data, &endptr, 10);
+    basic_string                *numberStr = Cbasic_string("12345", 6);
+    char                        *endptr;
+    int                         number = strtol(numberStr->data, &endptr, 10);
 
     fprintf_s(stdout, "Converted number: %d\n", number);
 
     //  Convert number to string using _snprintf_s
-    basic_string        *numberToStr = Cbasic_string("", 14);
+    basic_string                *numberToStr = Cbasic_string("", 14);
 
     _snprintf_s(numberToStr->data, numberToStr->size, _TRUNCATE, "%d", number);
 
     fprintf_s(stdout, "Converted string: %s\n", numberToStr->data);
 
-    //  String comparison using strcmp
-    if                  (strcmp(str1->data, str2->data)) fprintf_s(stdout, "Strings are not equal.\n");
+    //  String comparison using strncmp
+    if                          (strncmp(str1->data, str2->data, str1->size)) fprintf_s(stdout, "Strings are not equal.\n");
 
-    char                fullLine[255];
+    char                        fullLine[255];
 
     //  Clear newline from previous input
     getchar();
@@ -201,46 +229,46 @@ int                 main()
     fprintf_s(stdout, "Enter a full line: ");
 
     //  Using fgets function
-    if                  (fgets(fullLine, sizeof(fullLine), stdin))
+    if                          (fgets(fullLine, sizeof(fullLine), stdin))
     {
         size_t  len = strnlen_s(fullLine, sizeof(fullLine));
 
-        if      (len > 0 && fullLine[len - 1] == '\n') fullLine[len - 1] = 0;
+        if                      (len > 0 && fullLine[len - 1] == '\n') fullLine[len - 1] = 0;
 
         fprintf_s(stdout, "You entered: %s\n", fullLine);
     }
 
     //  Using basic_string struct
-    basic_string        *basicStr = Cbasic_string("Basic string example", 21);
+    basic_string                *basicStr = Cbasic_string("Basic string example", 21);
 
     fprintf_s(stdout, "Basic string: %s\n", basicStr->data);
 
     //  Using append function
-    basic_string        *appendStr = Cbasic_string(" Appended text.", 16);
+    basic_string                *appendStr = Cbasic_string(" Appended text.", 16);
 
     append_basic_string(result, appendStr);
 
     fprintf_s(stdout, "After append: %s\n", result->data);
 
     //  Using assign function
-    basic_string        *assignStr = Cbasic_string("", 1);
+    basic_string                *assignStr = Cbasic_string("", 1);
 
     assign(assignStr, "Assigned text.");
 
     fprintf_s(stdout, "After assign: %s\n", assignStr->data);
 
     //  Using at function
-    char                thirdChar = result->data[2];
+    char                        thirdChar = result->data[2];
 
     fprintf_s(stdout, "Character at index 2: %c\n", thirdChar);
 
     //  Using back function
-    char                lastChar = result->data[strnlen_s(result->data, result->size) - 1];
+    char                        lastChar = result->data[strnlen_s(result->data, result->size) - 1];
 
     fprintf_s(stdout, "Last character: %c\n", lastChar);
 
     //  Using begin function
-    char                firstChar = *result->data;
+    char                        firstChar = *result->data;
 
     fprintf_s(stdout, "First character using begin: %c\n", firstChar);
 
@@ -248,7 +276,31 @@ int                 main()
 
     fprintf_s(stdout, "String capacity: %lld\n", result->size);
 
-    basic_string        *All[] = {str1, str2, result, sub, numberStr, numberToStr, basicStr, appendStr, assignStr};
+    //  Using clear function
+
+    result->data[0]             = 0;
+
+    fprintf_s(stdout, "String after clear: '%s' (should be empty)\n", result->data);
+
+    //  Using compare function
+    int                         compareResult = compare_full(str1->data, str2->data);
+
+    if                          (!compareResult) puts("Strings are equal.");
+    else if                     (compareResult < 0) puts("str1 is less than str2.");
+    else                        puts("str1 is greater than str2.");
+
+    //  Using strncpy_s function
+    char                        buffer[50] = {0};
+    size_t                      copiedChars;
+    result                      = Cbasic_string("Copy this string.", 18);
+    
+    strncpy_s(buffer, sizeof(buffer), result->data, strnlen_s(result->data, result->size));
+
+    buffer[result->size - 1]    = 0;
+
+    fprintf_s(stdout, "Copied string: %s\n", buffer);
+
+    basic_string                *All[] = {str1, str2, result, sub, numberStr, numberToStr, basicStr, appendStr, assignStr};
 
     Dbasic_string(All, sizeof(All) / sizeof(All[0]));
 

@@ -112,5 +112,28 @@ int main()
     //  Using capacity function
     cout                << "String capacity: " << result.capacity() << endl;
 
+    //  Using clear function
+    result.clear();
+
+    cout                << "String after clear: '" << result << "' (should be empty)" << endl;
+
+    //  Using compare function
+    int                 compareResult = str1.compare(str2);
+
+    if                  (!compareResult) cout << "Strings are equal." << endl;
+    else if             (compareResult < 0) cout << "str1 is less than str2." << endl;
+    else                cout << "str1 is greater than str2." << endl;
+
+    //  Using _Copy_s function
+    char                buffer[50] = {0};
+    size_t              copiedChars;
+    result              = "Copy this string.";
+
+    result._Copy_s(buffer, sizeof(buffer), result.length());
+
+    buffer[result.length()] = 0;
+
+    cout                << "Copied string: " << buffer << endl;
+
     ExitProcess(0);
 }
