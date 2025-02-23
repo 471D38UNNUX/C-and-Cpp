@@ -283,9 +283,8 @@ int                             main()
 
     fprintf_s(stdout, "String capacity: %lld\n", result->size);
 
-    //  Using clear function
-
-    result->data[0]                                                 = 0;
+    //  Using _strset_s function
+    _strset_s(result->data, result->size, 0);
 
     fprintf_s(stdout, "String after clear: '%s' (should be empty)\n", result->data);
 
@@ -306,6 +305,19 @@ int                             main()
     buffer[strnlen_s(result->data, result->size)]   = 0;
 
     fprintf_s(stdout, "Copied string: %s\n", buffer);
+
+    //  Using data function
+    const char                                                      *dataPtr = result->data;
+
+    fprintf_s(stdout, "Data function output: %s\n", dataPtr);
+
+    //  Using empty function
+    fprintf_s(stdout, "Is result string empty? %s\n", !strncmp(result->data, "", result->size) ? "Yes" : "No");
+
+    //  Using end function
+    char                                                            lastCharUsingEnd = *(result->data + strnlen_s(result->data, result->size) - 1);
+
+    fprintf_s(stdout, "Last character using end: %c\n", lastCharUsingEnd);
 
     basic_string                                                    *All[] = {str1, str2, result, sub, numberStr, numberToStr, basicStr, appendStr, assignStr};
 

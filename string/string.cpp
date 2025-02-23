@@ -135,5 +135,17 @@ int main()
 
     cout                << "Copied string: " << buffer << endl;
 
+    //  Using data function
+    const char          *dataPtr = result.data();
+    
+    cout                << "Data function output: " << dataPtr << endl;
+    //  Using empty function
+    cout                << "Is result string empty? " << (result.empty() ? "Yes" : "No") << endl;
+    
+    //  Using end function
+    char                lastCharUsingEnd = *(result.end() - 1);
+
+    cout                << "Last character using end: " << lastCharUsingEnd << endl;
+
     ExitProcess(0);
 }
