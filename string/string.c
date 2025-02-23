@@ -274,6 +274,92 @@ static size_t       find_first_of_str(char *str, char *find_str, size_t offset)
 
     return  -1;
 }
+static size_t       find_last_not_of_char(char *str, size_t str_size, char ch)
+{
+    if      (!str || !str_size) return (size_t)-1;
+
+    size_t  len = strnlen_s(str, str_size);
+
+    for     (size_t i = len; i-- > 0;) if (str[i] != ch) return i;
+
+    return  -1;
+}
+static size_t       find_last_not_of_char_n(char *str, size_t str_size, char ch, size_t offset)
+{
+    if      (!str || !str_size) return -1;
+
+    size_t  len = strnlen_s(str, str_size);
+
+    if      (offset >= len) offset = len - 1;
+
+    for     (size_t i = offset + 1; i-- > 0;) if (str[i] != ch) return i;
+
+    return  -1;
+}
+static size_t       find_last_not_of_cstr(char *str, size_t str_size, char *chars, size_t offset)
+{
+    if      (!str || !chars || !str_size) return (size_t)-1;
+
+    size_t  len = strnlen_s(str, str_size);
+
+    if      (offset >= len) offset = len - 1;
+
+    for     (size_t i = offset + 1; i-- > 0;) if (!strchr(chars, str[i])) return i;
+
+    return  -1;
+}
+static size_t       find_last_not_of_cstr_n(char *str, size_t str_size, char *chars, size_t offset, size_t count)
+{
+    if      (!str || !chars || !str_size || !count) return (size_t)-1;
+
+    size_t  len = strnlen_s(str, str_size);
+
+    if      (offset >= len) offset = len - 1;
+
+    for     (size_t i = offset + 1; i-- > 0;) if (!memchr(chars, str[i], count)) return i;
+
+    return  -1;
+}
+static size_t find_last_of_char( char *str, char char_value)
+{
+    size_t  len = strnlen_s(str, SIZE_MAX);
+
+    for     (size_t i = len; i > 0; --i) if (str[i - 1] == char_value) return i - 1;
+
+    return  SIZE_MAX;
+}
+static size_t       find_last_of_char_n(char *str, char char_value, size_t offset)
+{
+    size_t  len = strnlen_s(str, SIZE_MAX);
+
+    if      (offset >= len) offset = len - 1;
+
+    for     (size_t i = offset + 1; i > 0; --i) if (str[i - 1] == char_value) return i - 1;
+
+    return  SIZE_MAX;
+}
+static size_t       find_last_of_set(char *str, const char *chars, size_t offset)
+{
+    size_t  len = strnlen_s(str, SIZE_MAX);
+
+    if      (offset >= len) offset = len - 1;
+
+    for     (size_t i = offset + 1; i > 0; --i) if (strrchr(chars, str[i - 1])) return i - 1;
+
+    return  SIZE_MAX;
+}
+static size_t find_last_of_set_count(char *str, char *chars, size_t offset, size_t count)
+{
+    size_t  len = strnlen_s(str, SIZE_MAX);
+
+    if      (offset >= len) offset = len - 1;
+
+    size_t  start = (offset >= count) ? (offset - count + 1) : 0;
+
+    for     (size_t i = offset + 1; i > start; --i) if (strrchr(chars, str[i - 1])) return i - 1;
+
+    return  SIZE_MAX;
+}
 int                 main()
 {
     basic_string                                                    *str1 = Cbasic_string("Hello", 6);
@@ -389,12 +475,17 @@ int                 main()
 
     fprintf_s(stdout, "First character using begin: %c\n", firstChar);
 
+    //  Using front function
+    char                                                            frontChar = result->data[0];
+
+    fprintf_s(stdout, "First character using front: %c\n", frontChar);
+
     //  Using capacity function
 
     fprintf_s(stdout, "String capacity: %lld\n", result->size);
 
-    //  Using _strset_s function
-    _strset_s(result->data, result->size, 0);
+    //  Using _strnset_s function
+    _strnset_s(result->data, result->size, 0, result->size);
 
     fprintf_s(stdout, "String after clear: '%s' (should be empty)\n", result->data);
 
@@ -449,7 +540,19 @@ int                 main()
 
     if                                                              (firstOf != -1) fprintf_s(stdout, "First character found: %c at position %llu\n", findSample->data[firstOf], firstOf);
     else                                                            puts("No different characters found.\n");
+
+    //  Using find_last_not_of function
+    size_t                                                          lastNotOf = find_last_not_of_char(sample->data, sample->size, '#');
     
+    if                                                              (lastNotOf != -1) fprintf_s(stdout, "Last character not '#': %c at position %llu\n", sample->data[lastNotOf], lastNotOf);
+    else                                                            puts("No different characters found.\n");
+
+    //  Using find_last_of function
+    size_t                                                          lastOf = find_last_of_char(sample->data, '#');
+
+    if                                                              (lastOf != -1) fprintf_s(stdout, "Last occurrence of '#': at position %llu\n", lastOf);
+    else                                                            puts("Character not found.\n");
+
     basic_string                                                    *All[] = {str1, str2, result, sub, numberStr, numberToStr, basicStr, appendStr, assignStr, sample};
 
     Dbasic_string(All, sizeof(All) / sizeof(All[0]));

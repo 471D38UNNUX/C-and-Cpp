@@ -104,6 +104,11 @@ int main()
 
     cout                << "First character using begin: " << firstChar << endl;
 
+    //  Using front function
+    char                frontChar = result.front();
+    
+    cout                << "First character using front: " << frontChar << endl;
+
     //  Using c_str function
     const char          *cstr = result.c_str();
     
@@ -167,6 +172,18 @@ int main()
 
     if                  (firstOf != string::npos) cout << "First character found: " << findSample[firstOf] << " at position " << firstOf << endl;
     else                cout << "No matching characters found." << endl;
+
+    //  Using find_last_not_of function
+    size_t              lastNotOf = sample.find_last_not_of("#");
+
+    if                  (lastNotOf != string::npos) cout << "Last character not '#': " << sample[lastNotOf] << " at position " << lastNotOf << endl;    
+    else                cout << "No different characters found." << endl;
+
+    //  Using find_last_of function
+    size_t              lastOf = sample.find_last_of("#");
+    
+    if                  (lastOf != string::npos) cout << "Last occurrence of '#': at position " << lastOf << endl;
+    else                cout << "Character not found." << endl;
 
     ExitProcess(0);
 }
