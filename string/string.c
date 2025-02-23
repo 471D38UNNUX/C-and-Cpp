@@ -148,8 +148,8 @@ static int          compare(char *str1, size_t pos1, size_t num1, char *str2, si
 
     char    *sub1 = str1 + pos1;
     char    *sub2 = str2 + pos2;
-    size_t  max_cmp1 = (num1 == (size_t)-1) ? len1 - pos1 : num1;
-    size_t  max_cmp2 = (num2 == (size_t)-1) ? len2 - pos2 : num2;
+    size_t  max_cmp1 = (num1 == -1) ? len1 - pos1 : num1;
+    size_t  max_cmp2 = (num2 == -1) ? len2 - pos2 : num2;
     size_t  cmp_len = (max_cmp1 < max_cmp2) ? max_cmp1 : max_cmp2;
     int     result = strncmp(sub1, sub2, cmp_len);
 
@@ -161,10 +161,120 @@ static int          compare(char *str1, size_t pos1, size_t num1, char *str2, si
 
     return  result;
 }
-static int          compare_full(char *str1, char *str2) {return compare(str1, 0, (size_t)-1, str2, 0, (size_t)-1);}
-static int          compare_substring(char *str1, size_t pos1, size_t num1, char *str2) {return compare(str1, pos1, num1, str2, 0, (size_t)-1);}
+static int          compare_full(char *str1, char *str2) {return compare(str1, 0, -1, str2, 0, -1);}
+static int          compare_substring(char *str1, size_t pos1, size_t num1, char *str2) {return compare(str1, pos1, num1, str2, 0, -1);}
 static int          compare_substrings(char *str1, size_t pos1, size_t num1, char *str2, size_t pos2, size_t num2) {return compare(str1, pos1, num1, str2, pos2, num2);}
-int                             main()
+static void         erase_range(int *arr, size_t *size, size_t first, size_t last)
+{
+    if      (first >= last || last > *size) return;
+
+    memmove_s(&arr[first], (*size - first) * sizeof(arr[0]), &arr[last], (*size - last) * sizeof(arr[0]));
+    
+    *size   -= (last - first);
+}
+static void         erase_at(int *arr, size_t *size, size_t index)
+{
+    if (index >= *size) return;
+
+    memmove_s(&arr[index], (*size - index) * sizeof(arr[0]), &arr[index + 1], (*size - index - 1) * sizeof(arr[0]));
+    
+    (*size)--;
+}
+static void         erase_substr(char *str, size_t *size, size_t offset, size_t count)
+{
+    if          (offset >= *size) return;
+    if          (offset + count > *size) count = *size - offset;
+    
+    memmove_s(&str[offset], (*size - offset) * sizeof(char), &str[offset + count], (*size - (offset + count)) * sizeof(char));
+
+    *size       -= count;
+    str[*size]  = 0;
+}
+static size_t       find_char(char *str, char ch, size_t offset)
+{
+    if      (!str) return -1;
+
+    char    *pos = strchr(str + offset, ch);
+
+    return  pos ? (size_t)(pos - str) : -1;
+}
+static size_t       find_str(char *str, char *substr)
+{
+    if      (!str || !substr) return -1;
+
+    char    *pos = strstr(str, substr);
+    
+    return  pos ? (size_t)(pos - str) : -1;
+}
+static size_t       find_substr(char *str, char *substr, size_t offset)
+{
+    if      (!str || !substr) return -1;
+
+    char    *pos = strstr(str + offset, substr);
+    
+    return  pos ? (size_t)(pos - str) : -1;
+}
+static size_t       find_substr_n(char *str, char *substr, size_t offset, size_t count)
+{
+    if      (!str || !substr || !count) return -1;
+
+    char    *pos = strstr(str + offset, substr);
+
+    if      (!pos) return -1;
+
+    return  !strncmp(pos, substr, count) ? (size_t)(pos - str) : -1;
+}
+static size_t       find_first_not_of(char *str, const char *chars, size_t max_len) {return  (strspn(str, chars) < strnlen_s(str, max_len)) ? strspn(str, chars) : -1;}
+static size_t       find_first_not_of_char(char *str, char ch, size_t offset, size_t max_len)
+{
+    for     (size_t i = offset; i < strnlen_s(str, max_len); i++) if (str[i] != ch) return i;
+    
+    return  -1;
+}
+static size_t       find_first_not_of_set(char *str, char *set, size_t offset, size_t count)
+{
+    size_t  pos = strspn(str + offset, set);
+    pos     += offset;
+
+    return  (pos < strnlen_s(str, count)) ? pos : -1;
+}
+static size_t       find_first_not_of_string(char *str, char *target, size_t offset, size_t max_len) {return find_first_not_of_set(str, target, offset, strnlen_s(str, max_len) - offset);}
+static size_t       find_first_of(char *str, char *chars)
+{
+    size_t  pos = strcspn(str, chars);
+
+    return  (str[pos]) ? pos : -1;
+}
+static size_t       find_first_of_char(char *str, char ch, size_t offset)
+{
+    char    *pos   = strchr(str + offset, ch);
+
+    return  (pos != NULL) ? (size_t)(pos - str) : -1;
+}
+static size_t       find_first_of_chars(char *str, char *chars, size_t offset)
+{
+    size_t  pos = strcspn(str + offset, chars);
+
+    return  (str[offset + pos]) ? (offset + pos) : -1;
+}
+static size_t       find_first_of_chars_n(char *str, char *chars, size_t offset, size_t count)
+{
+    size_t  pos = strcspn(str + offset, chars);
+
+    return  (pos < count && str[offset + pos]) ? (offset + pos) : -1;
+}
+static size_t       find_first_of_str(char *str, char *find_str, size_t offset)
+{
+    while   (str[offset])
+    {
+        if (strchr(find_str, str[offset])) return offset;
+
+        offset++;
+    }
+
+    return  -1;
+}
+int                 main()
 {
     basic_string                                                    *str1 = Cbasic_string("Hello", 6);
     basic_string                                                    *str2 = Cbasic_string("World", 6);
@@ -192,9 +302,9 @@ int                             main()
     fprintf_s(stdout, "Substring: %s\n", sub->data);
 
     //  Finding a substring
-    char                                                            *pos = strstr(result->data, "World");
+    size_t                                                          pos = find_str(result->data, "World");
 
-    if                                                              (pos) fprintf_s(stdout, "'World' found at position: %llu\n", pos - result->data);
+    if                                                              (pos != -1) fprintf_s(stdout, "'World' found at position: %llu\n", pos);
 
     //  Hash function (C++'s FNV-1a hash for demonstration)
     unsigned long long                                              hashValue = hash(result->data);
@@ -319,7 +429,28 @@ int                             main()
 
     fprintf_s(stdout, "Last character using end: %c\n", lastCharUsingEnd);
 
-    basic_string                                                    *All[] = {str1, str2, result, sub, numberStr, numberToStr, basicStr, appendStr, assignStr};
+    //  Using erase function
+    result                                                          = Rbasic_string(result, "Erase part of this string.", 27);
+
+    erase_substr(result->data, &result->size, 6, 9);    //  Remove "part of "
+
+    fprintf_s(stdout, "After erase: %s\n", result->data);
+
+    //  Using find_first_not_of function
+    basic_string                                                    *sample = Cbasic_string("###Hello###", 12);
+    size_t                                                          firstNotOf = find_first_not_of(sample->data, "#", strnlen_s(sample->data, 1024));
+
+    if                                                              (firstNotOf != -1) fprintf_s(stdout, "First character not '#': %c at position %llu\n", sample->data[firstNotOf], firstNotOf);
+    else                                                            puts("No different characters found.\n");
+
+    //  Using find_first_of function
+    basic_string                                                    *findSample = Cbasic_string("abcdefg", 8);
+    size_t                                                          firstOf = find_first_of(findSample->data, "dc");
+
+    if                                                              (firstOf != -1) fprintf_s(stdout, "First character found: %c at position %llu\n", findSample->data[firstOf], firstOf);
+    else                                                            puts("No different characters found.\n");
+    
+    basic_string                                                    *All[] = {str1, str2, result, sub, numberStr, numberToStr, basicStr, appendStr, assignStr, sample};
 
     Dbasic_string(All, sizeof(All) / sizeof(All[0]));
 

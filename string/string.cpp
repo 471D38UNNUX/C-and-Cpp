@@ -147,5 +147,26 @@ int main()
 
     cout                << "Last character using end: " << lastCharUsingEnd << endl;
 
+    //  Using erase function
+    result              = "Erase part of this string.";
+
+    result.erase(6, 9); //  Remove "part of "
+
+    cout                << "After erase: " << result << endl;
+
+    //  Using find_first_not_of function
+    string              sample = "###Hello###";
+    size_t              firstNotOf = sample.find_first_not_of("#");
+    
+    if                  (firstNotOf != string::npos) cout << "First character not '#': " << sample[firstNotOf] << " at position " << firstNotOf << endl;    
+    else                cout << "No different characters found." << endl;
+
+    //  Using find_first_of function
+    string              findSample = "abcdefg";
+    size_t              firstOf = findSample.find_first_of("dc");
+
+    if                  (firstOf != string::npos) cout << "First character found: " << findSample[firstOf] << " at position " << firstOf << endl;
+    else                cout << "No matching characters found." << endl;
+
     ExitProcess(0);
 }
