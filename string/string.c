@@ -10,26 +10,55 @@ unsigned long long  hash(char *str)
 
     return              hasher;
 }
+typedef struct      allocator
+{
+    struct basic_string *(*allocate)(size_t size);
+    void                (*construct)(struct basic_string **ptr, char *str);
+    void                (*destroy)(struct basic_string *ptr);
+    void                (*deallocate)(void *ptr);
+} allocator;
 typedef struct      basic_string
 {
-    char    *data;
-    size_t  size;
+    char        *data;
+    size_t      size;
+    allocator   get_allocator;
+    size_t      max_size;
 }                   basic_string;
+static basic_string *Cbasic_string(char *str, size_t size);
+static basic_string *allocate(size_t size) {return (basic_string*)VirtualAlloc(NULL, size * sizeof(basic_string), MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);}
+static void         construct(struct basic_string **ptr, char *str) {*ptr = Cbasic_string(str, strnlen_s(str, 1024));}
+static void         destroy(struct basic_string *ptr)
+{
+    if          (!ptr) return;
+    if          (ptr->data)
+    {
+        VirtualFree(ptr->data, 0, MEM_RELEASE);
+        ptr->data = NULL;
+    }
+    
+    ptr->size   = 0;
+}
+static void         deallocate(void *ptr) {if (ptr) {VirtualFree(ptr, 0, MEM_RELEASE);}}
 static basic_string *Cbasic_string(char *str, size_t size)
 {
-    basic_string    *new = (basic_string*)VirtualAlloc(NULL, sizeof(basic_string), MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    basic_string                    *new = (basic_string*)VirtualAlloc(NULL, sizeof(basic_string), MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 
-    if              (!new) ExitProcess(1);
+    if                              (!new) ExitProcess(1);
 
-    new->data       = (char*)VirtualAlloc(NULL, size + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    new->data               = (char*)VirtualAlloc(NULL, size + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 
-    if              (!new->data) ExitProcess(1);
+    if                      (!new->data) ExitProcess(1);
     
     strncpy_s(new->data, size + 1, str, size);
 
-    new->size       = size;
+    new->size               = size;
+    new->get_allocator.allocate     = allocate;
+    new->get_allocator.construct    = construct;
+    new->get_allocator.destroy      = destroy;
+    new->get_allocator.deallocate   = deallocate;
+    new->max_size                   = 0x7fffffffffffffff;
 
-    return          new;
+    return                  new;
 }
 static basic_string *Rbasic_string(basic_string *basic_string, char *str, size_t size)
 {
@@ -148,9 +177,7 @@ static int          compare(char *str1, size_t pos1, size_t num1, char *str2, si
 
     char    *sub1 = str1 + pos1;
     char    *sub2 = str2 + pos2;
-    size_t  max_cmp1 = (num1 == -1) ? len1 - pos1 : num1;
-    size_t  max_cmp2 = (num2 == -1) ? len2 - pos2 : num2;
-    size_t  cmp_len = (max_cmp1 < max_cmp2) ? max_cmp1 : max_cmp2;
+    size_t  max_cmp1 = (num1 == -1) ? len1 - pos1 : num1, max_cmp2 = (num2 == -1) ? len2 - pos2 : num2, cmp_len = (max_cmp1 < max_cmp2) ? max_cmp1 : max_cmp2;
     int     result = strncmp(sub1, sub2, cmp_len);
 
     if      (!result)
@@ -296,7 +323,7 @@ static size_t       find_last_not_of_char_n(char *str, size_t str_size, char ch,
 
     return  -1;
 }
-static size_t       find_last_not_of_cstr(char *str, size_t str_size, char *chars, size_t offset)
+static size_t       find_last_not_of_str(char *str, size_t str_size, char *chars, size_t offset)
 {
     if      (!str || !chars || !str_size) return (size_t)-1;
 
@@ -308,7 +335,7 @@ static size_t       find_last_not_of_cstr(char *str, size_t str_size, char *char
 
     return  -1;
 }
-static size_t       find_last_not_of_cstr_n(char *str, size_t str_size, char *chars, size_t offset, size_t count)
+static size_t       find_last_not_of_str_n(char *str, size_t str_size, char *chars, size_t offset, size_t count)
 {
     if      (!str || !chars || !str_size || !count) return (size_t)-1;
 
@@ -348,7 +375,7 @@ static size_t       find_last_of_set(char *str, const char *chars, size_t offset
 
     return  SIZE_MAX;
 }
-static size_t find_last_of_set_count(char *str, char *chars, size_t offset, size_t count)
+static size_t       find_last_of_set_count(char *str, char *chars, size_t offset, size_t count)
 {
     size_t  len = strnlen_s(str, SIZE_MAX);
 
@@ -360,6 +387,71 @@ static size_t find_last_of_set_count(char *str, char *chars, size_t offset, size
 
     return  SIZE_MAX;
 }
+static basic_string *insert_str_basic_string(basic_string *bstr, size_t pos, char *insert) {
+    size_t          len1 = bstr->size;
+    size_t          len2 = strnlen_s(insert, 4096);
+
+    if              (pos > len1) return NULL;
+    char            *new_data = (char *)VirtualAlloc(NULL, len1 + len2 + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    
+    if              (!new_data) ExitProcess(1);
+
+    memcpy_s(new_data, len1 + len2 + 1, bstr->data, pos);
+    memcpy_s(new_data + pos, len1 + len2 + 1 - pos, insert, len2);
+    memcpy_s(new_data + pos + len2, len1 + len2 + 1 - pos - len2, bstr->data + pos, len1 - pos + 1);
+
+    basic_string    *result = Cbasic_string(new_data, len1 + len2);
+    result->size    = len1 + len2;
+
+    return          result;
+}
+static basic_string *insert_str_count_basic_string(basic_string *bstr, size_t pos, char *insert, size_t count) {
+    size_t          len1 = bstr->size;
+
+    if              (pos > len1) return NULL;
+
+    char            *new_data = (char *)VirtualAlloc(NULL, len1 + count + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    
+    if              (!new_data) ExitProcess(1);
+
+    memcpy_s(new_data, len1 + count + 1, bstr->data, pos);
+    memcpy_s(new_data + pos, len1 + count + 1 - pos, insert, count);
+    memcpy_s(new_data + pos + count, len1 + count + 1 - pos - count, bstr->data + pos, len1 - pos + 1);
+
+    basic_string    *result = Cbasic_string(new_data, len1 + count);
+    result->size    = len1 + count;
+
+    return          result;
+}
+static basic_string *insert_str_substr_basic_string(basic_string *str1, size_t pos, basic_string *str2, size_t offset, size_t count)
+{
+    if      (offset > str2->size || offset + count > str2->size) return NULL;
+
+    return  insert_str_count_basic_string(str1, pos, str2->data + offset, count);
+}
+static basic_string *insert_repeat_char_basic_string(basic_string *bstr, size_t pos, size_t count, char ch) {
+    size_t          len = bstr->size;
+    
+    if              (pos > len) return NULL;
+
+    char            *new_data = (char *)VirtualAlloc(NULL, len + count + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    
+    if              (!new_data) ExitProcess(1);
+
+    memcpy_s(new_data, len + count + 1, bstr->data, pos);
+    
+    memset(new_data + pos, ch, count);
+    
+    memcpy_s(new_data + pos + count, len + count + 1 - pos - count, bstr->data + pos, len - pos + 1);
+
+    basic_string    *result = Cbasic_string(new_data, len + count);
+    result->size    = len + count;
+
+    return          result;
+}
+static basic_string *insert_iter_char_basic_string(basic_string *bstr, char *iter, char ch) {return insert_repeat_char_basic_string(bstr, iter - bstr->data, 1, ch);}
+static basic_string *insert_iter_range_basic_string(basic_string *bstr, char *iter, char *first, char *last) {return insert_str_count_basic_string(bstr, iter - bstr->data, first, last - first);}
+static basic_string *insert_iter_repeat_basic_string(basic_string *bstr, char *iter, size_t count, char ch) {return insert_repeat_char_basic_string(bstr, iter - bstr->data, count, ch);}
 int                 main()
 {
     basic_string                                                    *str1 = Cbasic_string("Hello", 6);
@@ -553,7 +645,27 @@ int                 main()
     if                                                              (lastOf != -1) fprintf_s(stdout, "Last occurrence of '#': at position %llu\n", lastOf);
     else                                                            puts("Character not found.\n");
 
-    basic_string                                                    *All[] = {str1, str2, result, sub, numberStr, numberToStr, basicStr, appendStr, assignStr, sample};
+    //  Using get_allocator function
+    allocator                                                       alloc = result->get_allocator;  //  Get allocator from existing string
+    basic_string                                                    *p = alloc.allocate(1); //  Allocate space for one string
+    
+    alloc.construct(&p, "Allocated string"); //  Construct the string in-place
+
+    fprintf_s(stdout, "Allocated string using get_allocator: %s\n", p->data);
+
+    alloc.destroy(p);   //  Destroy the string object
+
+    alloc.deallocate(p);    //  Free the memory
+
+    //  Using insert function
+    result                                                          = Rbasic_string(result, "Say !", 6);
+    result                                                          = insert_str_basic_string(result, 4, "Hello");
+
+    fprintf_s(stdout, "After insert: %s\n", result->data);
+    //  Using max_size function
+    fprintf_s(stdout, "Maximum size a string can hold: %lld\n", result->max_size);
+
+    basic_string                                                    *All[] = {str1, str2, result, sub, numberStr, numberToStr, basicStr, appendStr, assignStr, sample, findSample};
 
     Dbasic_string(All, sizeof(All) / sizeof(All[0]));
 

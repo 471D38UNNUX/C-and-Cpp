@@ -7,183 +7,204 @@ using namespace std;
 int main()
 {
     //  Declare and initialize strings
-    string              str1 = "Hello";
-    string              str2 = "World";
+    string                  str1 = "Hello";
+    string                  str2 = "World";
     //  Concatenation
-    string              result = str1 + ", " + str2 + "!";
+    string                  result = str1 + ", " + str2 + "!";
 
-    cout                << result << endl;
+    cout                    << result << endl;
     //  Getting string length
-    cout                << "Length: " << result.length() << endl;
+    cout                    << "Length: " << result.length() << endl;
     //  Accessing characters
-    cout                << "First character: " << result[0] << endl;
+    cout                    << "First character: " << result[0] << endl;
 
     //  Modifying a string
-    result[0]           = 'h';
+    result[0]               = 'h';
 
-    cout                << "Modified string: " << result << endl;
+    cout                    << "Modified string: " << result << endl;
 
     //  Substring
-    string              sub = result.substr(0, 5);
+    string                  sub = result.substr(0, 5);
 
-    cout            << "Substring: " << sub << endl;
+    cout                    << "Substring: " << sub << endl;
 
     //  Finding a substring
-    size_t              pos = result.find("World");
+    size_t                  pos = result.find("World");
     
-    if                  (pos != string::npos) cout << "'World' found at position: " << pos << endl;
+    if                      (pos != string::npos) cout << "'World' found at position: " << pos << endl;
 
     //  Hash function
-    hash<string>        hasher;
-    size_t              hashValue = hasher(result);
+    hash<string>            hasher;
+    size_t                  hashValue = hasher(result);
 
-    cout                << "Hash value: " << hashValue << endl;
+    cout                    << "Hash value: " << hashValue << endl;
     //  Swap function
-    cout                << "Before swap: str1 = " << str1 << ", str2 = " << str2 << endl;
+    cout                    << "Before swap: str1 = " << str1 << ", str2 = " << str2 << endl;
 
     str1.swap(str2);
 
-    cout                << "After swap: str1 = " << str1 << ", str2 = " << str2 << endl;
+    cout                    << "After swap: str1 = " << str1 << ", str2 = " << str2 << endl;
 
     //  Convert string to integer using stoi
-    string              numberStr = "12345";
-    int                 number = stoi(numberStr);
+    string                  numberStr = "12345";
+    int                     number = stoi(numberStr);
     
-    cout                << "Converted number: " << number << endl;
+    cout                    << "Converted number: " << number << endl;
 
     //  Convert number to string using to_string
-    string              numberToStr = to_string(number);
+    string                  numberToStr = to_string(number);
 
-    cout                << "Converted string: " << numberToStr << endl;
+    cout                    << "Converted string: " << numberToStr << endl;
 
     //  String comparison using != operator
-    if                  (str1 != str2) cout << "Strings are not equal." << endl;
+    if                      (str1 != str2) cout << "Strings are not equal." << endl;
 
     //  Using getline function
     cin.ignore();   //  Clear newline from previous input
 
-    string              fullLine;
+    string                  fullLine;
 
     cout                << "Enter a full line: ";
 
     getline(cin, fullLine);
 
-    cout                << "You entered: " << fullLine << endl;
+    cout                    << "You entered: " << fullLine << endl;
 
     //  Using basic_string class
     basic_string<char>  basicStr = "Basic string example";
 
-    cout                << "Basic string: " << basicStr << endl;
+    cout                    << "Basic string: " << basicStr << endl;
 
     //  Using append function
-    string              appendStr = " Appended text.";
+    string                  appendStr = " Appended text.";
 
     result.append(appendStr);
 
-    cout                << "After append: " << result << endl;
+    cout                    << "After append: " << result << endl;
 
     //  Using assign function
-    string              assignStr;
+    string                  assignStr;
 
     assignStr.assign("Assigned text.");
 
-    cout                << "After assign: " << assignStr << endl;
+    cout                    << "After assign: " << assignStr << endl;
 
     //  Using at function
-    char                thirdChar = result.at(2);
+    char                    thirdChar = result.at(2);
 
-    cout                << "Character at index 2: " << thirdChar << endl;
+    cout                    << "Character at index 2: " << thirdChar << endl;
 
     //  Using back function
-    char                lastChar = result.back();
+    char                    lastChar = result.back();
 
-    cout                << "Last character: " << lastChar << endl;
+    cout                    << "Last character: " << lastChar << endl;
 
     //  Using begin function
-    char                firstChar = *result.begin();
+    char                    firstChar = *result.begin();
 
-    cout                << "First character using begin: " << firstChar << endl;
+    cout                    << "First character using begin: " << firstChar << endl;
 
     //  Using front function
-    char                frontChar = result.front();
+    char                    frontChar = result.front();
     
-    cout                << "First character using front: " << frontChar << endl;
+    cout                    << "First character using front: " << frontChar << endl;
 
     //  Using c_str function
-    const char          *cstr = result.c_str();
+    const char              *cstr = result.c_str();
     
-    cout                << "C-style string: " << cstr << endl;
+    cout                    << "C-style string: " << cstr << endl;
 
     //  Using capacity function
-    cout                << "String capacity: " << result.capacity() << endl;
+    cout                    << "String capacity: " << result.capacity() << endl;
 
     //  Using clear function
     result.clear();
 
-    cout                << "String after clear: '" << result << "' (should be empty)" << endl;
+    cout                    << "String after clear: '" << result << "' (should be empty)" << endl;
 
     //  Using compare function
-    int                 compareResult = str1.compare(str2);
+    int                     compareResult = str1.compare(str2);
 
-    if                  (!compareResult) cout << "Strings are equal." << endl;
-    else if             (compareResult < 0) cout << "str1 is less than str2." << endl;
-    else                cout << "str1 is greater than str2." << endl;
+    if                      (!compareResult) cout << "Strings are equal." << endl;
+    else if                 (compareResult < 0) cout << "str1 is less than str2." << endl;
+    else                    cout << "str1 is greater than str2." << endl;
 
     //  Using _Copy_s function
-    char                buffer[50] = {0};
-    size_t              copiedChars;
-    result              = "Copy this string.";
+    char                    buffer[50] = {0};
+    size_t                  copiedChars;
+    result                  = "Copy this string.";
 
     result._Copy_s(buffer, sizeof(buffer), result.length());
 
     buffer[result.length()] = 0;
 
-    cout                << "Copied string: " << buffer << endl;
+    cout                    << "Copied string: " << buffer << endl;
 
     //  Using data function
-    const char          *dataPtr = result.data();
+    const char              *dataPtr = result.data();
     
-    cout                << "Data function output: " << dataPtr << endl;
+    cout                    << "Data function output: " << dataPtr << endl;
     //  Using empty function
-    cout                << "Is result string empty? " << (result.empty() ? "Yes" : "No") << endl;
+    cout                    << "Is result string empty? " << (result.empty() ? "Yes" : "No") << endl;
     
     //  Using end function
-    char                lastCharUsingEnd = *(result.end() - 1);
+    char                    lastCharUsingEnd = *(result.end() - 1);
 
-    cout                << "Last character using end: " << lastCharUsingEnd << endl;
+    cout                    << "Last character using end: " << lastCharUsingEnd << endl;
 
     //  Using erase function
-    result              = "Erase part of this string.";
+    result                  = "Erase part of this string.";
 
     result.erase(6, 9); //  Remove "part of "
 
-    cout                << "After erase: " << result << endl;
+    cout                    << "After erase: " << result << endl;
 
     //  Using find_first_not_of function
-    string              sample = "###Hello###";
-    size_t              firstNotOf = sample.find_first_not_of("#");
+    string                  sample = "###Hello###";
+    size_t                  firstNotOf = sample.find_first_not_of("#");
     
-    if                  (firstNotOf != string::npos) cout << "First character not '#': " << sample[firstNotOf] << " at position " << firstNotOf << endl;    
-    else                cout << "No different characters found." << endl;
+    if                      (firstNotOf != string::npos) cout << "First character not '#': " << sample[firstNotOf] << " at position " << firstNotOf << endl;    
+    else                    cout << "No different characters found." << endl;
 
     //  Using find_first_of function
-    string              findSample = "abcdefg";
-    size_t              firstOf = findSample.find_first_of("dc");
+    string                  findSample = "abcdefg";
+    size_t                  firstOf = findSample.find_first_of("dc");
 
-    if                  (firstOf != string::npos) cout << "First character found: " << findSample[firstOf] << " at position " << firstOf << endl;
-    else                cout << "No matching characters found." << endl;
+    if                      (firstOf != string::npos) cout << "First character found: " << findSample[firstOf] << " at position " << firstOf << endl;
+    else                    cout << "No matching characters found." << endl;
 
     //  Using find_last_not_of function
-    size_t              lastNotOf = sample.find_last_not_of("#");
+    size_t                  lastNotOf = sample.find_last_not_of("#");
 
-    if                  (lastNotOf != string::npos) cout << "Last character not '#': " << sample[lastNotOf] << " at position " << lastNotOf << endl;    
-    else                cout << "No different characters found." << endl;
+    if                      (lastNotOf != string::npos) cout << "Last character not '#': " << sample[lastNotOf] << " at position " << lastNotOf << endl;    
+    else                    cout << "No different characters found." << endl;
 
     //  Using find_last_of function
-    size_t              lastOf = sample.find_last_of("#");
+    size_t                  lastOf = sample.find_last_of("#");
     
-    if                  (lastOf != string::npos) cout << "Last occurrence of '#': at position " << lastOf << endl;
-    else                cout << "Character not found." << endl;
+    if                      (lastOf != string::npos) cout << "Last occurrence of '#': at position " << lastOf << endl;
+    else                    cout << "Character not found." << endl;
+
+    //  Using get_allocator function
+    allocator<string>       alloc = result.get_allocator(); //  Get allocator from existing string
+    string                  *p = alloc.allocate(1); //  Allocate space for one string
+
+    alloc.construct(p, "Allocated string"); //  Construct the string in-place
+
+    cout                    << "Allocated string using get_allocator: " << *p << endl;
+    
+    alloc.destroy(p);   //  Destroy the string object
+    
+    alloc.deallocate(p, 1); //  Free the memory
+
+    //  Using insert function
+    result                  = "Say !";
+
+    result.insert(4, "Hello");
+
+    cout                    << "After insert: " << result << endl;
+    //  Using max_size function
+    cout                    << "Maximum size a string can hold: " << result.max_size() << endl;
 
     ExitProcess(0);
 }
