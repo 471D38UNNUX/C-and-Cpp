@@ -206,5 +206,19 @@ int main()
     //  Using max_size function
     cout                    << "Maximum size a string can hold: " << result.max_size() << endl;
 
+    //  Using pop_back function
+    result                  = "Remove last.";
+
+    result.pop_back();
+
+    cout                    << "After pop_back: " << result << endl;
+
+    //  Using push_back function
+    result.push_back('?');  //  Appends a character at the end
+
+    cout                    << "After push_back: " << result << endl;
+    //  Using rbegin function
+    cout                    << "Last character using rbegin: " << *result.rbegin() << endl;
+
     ExitProcess(0);
 }
