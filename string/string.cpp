@@ -220,5 +220,28 @@ int main()
     //  Using rbegin function
     cout                    << "Last character using rbegin: " << *result.rbegin() << endl;
 
+    //  Using rend function
+    auto                    rendIt = result.rend();
+    rendIt--;
+    
+    cout                    << "Character before rend: " << *rendIt << endl;
+
+    //  Using replace function
+    result                  = "I love programming!";
+
+    result.replace(7, 11, "coding");    //  Replacing "programming" with "coding"
+    
+    cout                    << "After replace: " << result << endl;
+
+    //  Using reserve function
+    string                  reservedStr;
+
+    reservedStr.reserve(100);   //  Reserve space for at least 100 characters
+    
+    reservedStr             = "Reserved string memory.";
+
+    cout                    << "After reserve: " << reservedStr << endl;
+    cout                    << "Reserved capacity: " << reservedStr.capacity() << endl;
+
     ExitProcess(0);
 }

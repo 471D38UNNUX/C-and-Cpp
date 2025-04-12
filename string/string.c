@@ -61,7 +61,7 @@ static basic_string *Cbasic_string(char *str)
 
     while                           (size > capacity)
     {
-        if          (capacity > 0xfffffffffffffff) break;
+        if          (capacity > 0xefffffffffffffff) break;
 
         capacity    += 16;
     }
@@ -92,7 +92,7 @@ static basic_string *Cbasic_stringn(char *str, size_t size)
 
     while                           (size > capacity)
     {
-        if          (capacity > 0xfffffffffffffff) break;
+        if          (capacity > 0xefffffffffffffff) break;
 
         capacity    += 16;
     }
@@ -147,7 +147,7 @@ static void         append_substr(basic_string *dest, char *str, size_t count)
 
     while                   (new_size - 1 > capacity)
     {
-        if          (capacity > 0xfffffffffffffff) break;
+        if          (capacity > 0xefffffffffffffff) break;
 
         capacity    += 16;
     }
@@ -177,7 +177,7 @@ static void         append_repeated_char(basic_string *dest, size_t count, char 
 
     while                   (new_size - 1 > capacity)
     {
-        if          (capacity > 0xfffffffffffffff) break;
+        if          (capacity > 0xefffffffffffffff) break;
 
         capacity    += 16;
     }
@@ -186,7 +186,7 @@ static void         append_repeated_char(basic_string *dest, size_t count, char 
     dest->size              = new_size - 1;
     dest->capacity          = capacity;
 }
-static void         append_range(basic_string *dest, char *first, const char *last)
+static void         append_range(basic_string *dest, char *first, char *last)
 {
     if      (first >= last) return;
 
@@ -211,7 +211,7 @@ static void         assign_n(basic_string *dest, char *str, size_t count)
 
     while               (new_size - 1 > capacity)
     {
-        if          (capacity > 0xfffffffffffffff) break;
+        if          (capacity > 0xefffffffffffffff) break;
 
         capacity    += 16;
     }
@@ -244,7 +244,7 @@ static void         assign_repeat(basic_string *dest, size_t count, char ch)
 
     while           (count > capacity)
     {
-        if          (capacity > 0xfffffffffffffff) break;
+        if          (capacity > 0xefffffffffffffff) break;
 
         capacity    += 16;
     }
@@ -345,7 +345,7 @@ static size_t       find_substr_n(char *str, char *substr, size_t offset, size_t
 
     return  !strncmp(pos, substr, count) ? (size_t)(pos - str) : -1;
 }
-static size_t       find_first_not_of(char *str, const char *chars, size_t max_len) {return  (strspn(str, chars) < strnlen_s(str, max_len)) ? strspn(str, chars) : -1;}
+static size_t       find_first_not_of(char *str, char *chars, size_t max_len) {return  (strspn(str, chars) < strnlen_s(str, max_len)) ? strspn(str, chars) : -1;}
 static size_t       find_first_not_of_char(char *str, char ch, size_t offset, size_t max_len)
 {
     for     (size_t i = offset; i < strnlen_s(str, max_len); i++) if (str[i] != ch) return i;
@@ -459,7 +459,7 @@ static size_t       find_last_of_char_n(char *str, char char_value, size_t offse
 
     return  SIZE_MAX;
 }
-static size_t       find_last_of_set(char *str, const char *chars, size_t offset)
+static size_t       find_last_of_set(char *str, char *chars, size_t offset)
 {
     size_t  len = strnlen_s(str, SIZE_MAX);
 
@@ -568,22 +568,341 @@ static void         push_back(basic_string **str_ptr, char ch)
     if                      (!str_ptr || !*str_ptr) return;
 
     basic_string            *str = *str_ptr;
-    // Allocate a new buffer for the extended string (old size + 1 char + null)
     char                    *new_data = (char*)VirtualAlloc(NULL, str->size + 2, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
     if                      (!new_data) ExitProcess(1);
 
-    // Copy old string into new buffer
     memcpy_s(new_data, str->size + 2, str->data, str->size);
 
-    // Append the new character and null terminator
     new_data[str->size]     = ch;
     new_data[str->size + 1] = 0;
-
-    // Replace the old basic_string with a new one
     *str_ptr                = Rbasic_stringn(str, new_data, str->size + 1);
 
-    // Free temporary buffer
     VirtualFree(new_data, 0, MEM_RELEASE);
+}
+static int          replace_at_position(basic_string **str, size_t pos, size_t len, char *rep)
+{
+    if                  (!str || !(*str) || !rep) return -1;
+
+    basic_string        *s = *str;
+    size_t              rep_len = strnlen_s(rep, _TRUNCATE);
+
+    if                  (pos > s->size || pos + len > s->size) return -1;
+
+    size_t              new_size = s->size - len + rep_len;
+    char                *new_data = (char *)VirtualAlloc(NULL, new_size + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    
+    if                  (!new_data) ExitProcess(1);
+    if                  (pos > 0) memcpy_s(new_data, new_size + 1, s->data, pos);
+    
+    memcpy_s(new_data + pos, new_size + 1 - pos, rep, rep_len);
+
+    size_t              tail_len = s->size - (pos + len);
+
+    if                  (tail_len > 0) memcpy_s(new_data + pos + rep_len, new_size + 1 - (pos + rep_len), s->data + pos + len, tail_len);
+
+    new_data[new_size]  = 0;
+    *str                = Rbasic_stringn(s, new_data, new_size);
+
+    VirtualFree(new_data, 0, MEM_RELEASE);
+
+    return              0;
+}
+static int          replace_at_position_basic_string(basic_string **str, size_t pos, size_t len, basic_string *rep)
+{
+    if                  (!str || !(*str) || !rep) return -1;
+
+    basic_string        *s = *str;
+    size_t              rep_len = rep->size;
+
+    if                  (pos > s->size || pos + len > s->size) return -1;
+
+    size_t              new_size = s->size - len + rep_len;
+    char                *new_data = (char *)VirtualAlloc(NULL, new_size + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    
+    if                  (!new_data) ExitProcess(1);
+    if                  (pos > 0) memcpy_s(new_data, new_size + 1, s->data, pos);
+    
+    memcpy_s(new_data + pos, new_size + 1 - pos, rep->data, rep_len);
+
+    size_t              tail_len = s->size - (pos + len);
+
+    if                  (tail_len > 0) memcpy_s(new_data + pos + rep_len, new_size + 1 - (pos + rep_len), s->data + pos + len, tail_len);
+
+    new_data[new_size]  = 0;
+    *str                = Rbasic_stringn(s, new_data, new_size);
+
+    VirtualFree(new_data, 0, MEM_RELEASE);
+
+    return              0;
+}
+static int replace_at_position_partial(basic_string **str, size_t pos, size_t len, char *rep, size_t rep_len)
+{
+    if                  (!str || !(*str) || !rep) return -1;
+
+    basic_string        *s = *str;
+
+    if                  (pos > s->size || pos + len > s->size) return -1;
+
+    size_t              new_size = s->size - len + rep_len;
+    char                *new_data = (char *)VirtualAlloc(NULL, new_size + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    
+    if                  (!new_data) ExitProcess(1);
+    if                  (pos > 0) memcpy_s(new_data, new_size + 1, s->data, pos);
+    
+    memcpy_s(new_data + pos, new_size + 1 - pos, rep, rep_len);
+
+    size_t              tail_len = s->size - (pos + len);
+
+    if                  (tail_len > 0) memcpy_s(new_data + pos + rep_len, new_size + 1 - (pos + rep_len), s->data + pos + len, tail_len);
+
+    new_data[new_size]  = 0;
+    *str                = Rbasic_stringn(s, new_data, new_size);
+
+    VirtualFree(new_data, 0, MEM_RELEASE);
+
+    return              0;
+}
+static int          replace_substring(basic_string **str, size_t pos, size_t count, const char *rep, size_t rep_pos, size_t rep_len)
+{
+    if                  (!str || !(*str) || !rep) return -1;
+
+    basic_string        *s = *str;
+
+    if                  (pos > s->size) return -1;
+    if                  (pos + count > s->size) count = s->size - pos;
+
+    size_t              new_size = s->size - count + rep_len;
+    char                *new_data = (char *)VirtualAlloc(NULL, new_size + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    
+    if                  (!new_data) ExitProcess(1);
+    if                  (pos > 0) memcpy_s(new_data, new_size + 1, s->data, pos);
+
+    memcpy_s(new_data + pos, new_size + 1 - pos, rep + rep_pos, rep_len);
+
+    size_t              tail_len = s->size - (pos + count);
+
+    if                  (tail_len > 0) memcpy_s(new_data + pos + rep_len, new_size + 1 - (pos + rep_len), s->data + pos + count, tail_len);
+
+    new_data[new_size]  = 0;
+    *str                = Rbasic_stringn(s, new_data, new_size);
+
+    VirtualFree(new_data, 0, MEM_RELEASE);
+
+    return              0;
+}
+static int          replace_with_char(basic_string **str, size_t pos, size_t len, char c, size_t count)
+{
+    if                  (!str || !(*str)) return -1;
+
+    basic_string        *s = *str;
+
+    if                  (pos > s->size || pos + len > s->size) return -1;
+
+    size_t              new_size = s->size - len + count;
+    char                *new_data = (char *)VirtualAlloc(NULL, new_size + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    
+    if                  (!new_data) ExitProcess(1);
+    if                  (pos > 0) memcpy_s(new_data, new_size + 1, s->data, pos);
+    
+    memset(new_data + pos, c, count);
+
+    size_t              tail_len = s->size - (pos + len);
+
+    if                  (tail_len > 0) memcpy_s(new_data + pos + count, new_size + 1 - (pos + count), s->data + pos + len, tail_len);
+
+    new_data[new_size]  = 0;
+    *str                = Rbasic_stringn(s, new_data, new_size);
+
+    VirtualFree(new_data, 0, MEM_RELEASE);
+
+    return              0;
+}
+static int              replace_using_iterators(basic_string **str, char *first, char *last, char *rep)
+{
+    if                  (!str || !(*str) || !first || !last || !rep) return -1;
+
+    basic_string        *s = *str;
+    size_t              rep_len = strnlen_s(rep, _TRUNCATE);
+    size_t              pos = first - s->data, len = last - first;
+
+    if                  (pos > s->size || pos + len > s->size) return -1;
+
+    size_t              new_size = s->size - len + rep_len;
+    char                *new_data = (char *)VirtualAlloc(NULL, new_size + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    
+    if                  (!new_data) ExitProcess(1);
+
+    if                  (pos > 0) memcpy_s(new_data, new_size + 1, s->data, pos);
+    
+    memcpy_s(new_data + pos, new_size + 1 - pos, rep, rep_len);
+
+    size_t              tail_len = s->size - (pos + len);
+
+    if                  (tail_len > 0) memcpy_s(new_data + pos + rep_len, new_size + 1 - (pos + rep_len), s->data + pos + len, tail_len);
+
+    new_data[new_size]  = 0;
+    *str                = Rbasic_stringn(s, new_data, new_size);
+
+    VirtualFree(new_data, 0, MEM_RELEASE);
+
+    return              0;
+}
+static int              replace_using_iterators_basic_string(basic_string **str, char *first, char *last, basic_string *rep)
+{
+    if                  (!str || !(*str) || !first || !last || !rep) return -1;
+
+    basic_string        *s = *str;
+    size_t              rep_len = rep->size, pos = first - s->data, len = last - first;
+
+    if                  (pos > s->size || pos + len > s->size) return -1;
+
+    size_t              new_size = s->size - len + rep_len;
+    char                *new_data = (char *)VirtualAlloc(NULL, new_size + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    
+    if                  (!new_data) ExitProcess(1);
+    if                  (pos > 0) memcpy_s(new_data, new_size + 1, s->data, pos);
+    
+    memcpy_s(new_data + pos, new_size + 1 - pos, rep->data, rep_len);
+
+    size_t              tail_len = s->size - (pos + len);
+
+    if                  (tail_len > 0) memcpy_s(new_data + pos + rep_len, new_size + 1 - (pos + rep_len), s->data + pos + len, tail_len);
+
+    new_data[new_size]  = 0;
+    *str                = Rbasic_stringn(s, new_data, new_size);
+
+    VirtualFree(new_data, 0, MEM_RELEASE);
+    
+    return              0;
+}
+static int              replace_with_substring(basic_string **str, size_t pos, size_t len, char *rep, size_t subpos, size_t sublen)
+{
+    if                  (!str || !(*str) || !rep) return -1;
+
+    basic_string        *s = *str;
+    size_t rep_len      = strnlen_s(rep, _TRUNCATE);
+
+    if                  (subpos > rep_len) return -1;
+
+    size_t              use_len = (sublen == SIZE_MAX || subpos + sublen > rep_len) ? rep_len - subpos : sublen;
+
+    if                  (pos > s->size || pos + len > s->size) return -1;
+
+    size_t              new_size = s->size - len + use_len;
+    char                *new_data = (char *)VirtualAlloc(NULL, new_size + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    
+    if                  (!new_data) ExitProcess(1);
+    if                  (pos > 0) memcpy_s(new_data, new_size + 1, s->data, pos);
+    
+    memcpy_s(new_data + pos, new_size + 1 - pos, rep + subpos, use_len);
+
+    size_t              tail_len = s->size - (pos + len);
+
+    if                  (tail_len > 0) memcpy_s(new_data + pos + use_len, new_size + 1 - (pos + use_len), s->data + pos + len, tail_len);
+
+    new_data[new_size]  = 0;
+    *str                = Rbasic_stringn(s, new_data, new_size);
+
+    VirtualFree(new_data, 0, MEM_RELEASE);
+    
+    return              0;
+}
+static int              replace_using_iterators_with_char(basic_string **str, char *first, char *last, char c, size_t count)
+{
+    if                  (!str || !(*str) || !first || !last) return -1;
+
+    basic_string        *s = *str;
+    size_t              pos = first - s->data, len = last - first;
+
+    if                  (pos > s->size || pos + len > s->size) return -1;
+
+    size_t              new_size = s->size - len + count;
+    char                *new_data = (char *)VirtualAlloc(NULL, new_size + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    
+    if                  (!new_data) ExitProcess(1);
+    if                  (pos > 0) memcpy_s(new_data, new_size + 1, s->data, pos);
+    
+    memset(new_data + pos, c, count);
+
+    size_t              tail_len = s->size - (pos + len);
+
+    if                  (tail_len > 0) memcpy_s(new_data + pos + count, new_size + 1 - (pos + count), s->data + pos + len, tail_len);
+
+    new_data[new_size]  = 0;
+    *str                = Rbasic_stringn(s, new_data, new_size);
+
+    VirtualFree(new_data, 0, MEM_RELEASE);
+
+    return              0;
+}
+static int replace_using_iterators_multiple_chars(basic_string **str, char *first, char *last, char *rep, size_t rep_len)
+{
+    if                  (!str || !(*str) || !first || !last || !rep) return -1;
+
+    basic_string        *s = *str;
+    size_t              pos = first - s->data, len = last - first;
+
+    if                  (pos > s->size || pos + len > s->size) return -1;
+
+    size_t              new_size = s->size - len + rep_len;
+    char                *new_data = (char *)VirtualAlloc(NULL, new_size + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    
+    if                  (!new_data) ExitProcess(1);
+    if                  (pos > 0) memcpy_s(new_data, new_size + 1, s->data, pos);
+    
+    memcpy_s(new_data + pos, new_size + 1 - pos, rep, rep_len);
+
+    size_t              tail_len = s->size - (pos + len);
+
+    if                  (tail_len > 0) memcpy_s(new_data + pos + rep_len, new_size + 1 - (pos + rep_len), s->data + pos + len, tail_len);
+
+    new_data[new_size]  = 0;
+    *str                = Rbasic_stringn(s, new_data, new_size);
+
+    VirtualFree(new_data, 0, MEM_RELEASE);
+
+    return              0;
+}
+static int          replace_entire_string(basic_string **str, char *replacement)
+{
+    *str    = Rbasic_string(*str, (char *)replacement);
+
+    return  (*str != NULL) ? 0 : -1;
+}
+static int          replace_entire_string_basic_string(basic_string **str, basic_string *replacement)
+{
+    *str    = Rbasic_stringn(*str, replacement->data, replacement->size);
+
+    return  (*str != NULL) ? 0 : -1;
+}
+static void         reserve(basic_string *str, size_t new_cap)
+{
+    if              (!str || new_cap <= str->capacity) return;
+
+    char            *new_data = (char *)VirtualAlloc(NULL, new_cap + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    
+    if              (!new_data)  ExitProcess(1);
+    if              (str->data)
+    {
+        if                  (memcpy_s(new_data, new_cap + 1, str->data, str->size)) ExitProcess(1);
+
+        new_data[str->size] = 0;
+
+        VirtualFree(str->data, 0, MEM_RELEASE);
+    }
+
+    size_t          capacity = 15;
+
+    while           (new_cap - 1 > capacity)
+    {
+        if          (capacity > 0xefffffffffffffff) break;
+
+        capacity    += 16;
+    }
+
+    str->data       = new_data;
+    str->size       = new_cap;
+    str->capacity   = capacity;
 }
 int                 main()
 {
@@ -707,7 +1026,7 @@ int                 main()
 
     //  Using capacity function
 
-    fprintf_s(stdout, "String capacity: %lld\n", result->capacity);
+    fprintf_s(stdout, "String capacity: %llu\n", result->capacity);
 
     //  Using _strnset_s function
     _strnset_s(result->data, result->size + 1, 0, result->size + 1);
@@ -812,7 +1131,30 @@ int                 main()
     //  Using rbegin function
     fprintf_s(stdout, "Last character using rbegin: %c\n", *(result->data + result->size - 1));
 
-    basic_string                                                    *All[] = {str1, str2, result, sub, numberStr, numberToStr, basicStr, appendStr, assignStr, sample, findSample};
+    //  Using rend function
+    char                                                            *rendIt = result->data;
+
+    fprintf_s(stdout, "Character before rend: %c\n", *rendIt);
+
+    //  Using replace function
+    result                                                          = Rbasic_string(result, "I love programming!");
+
+    replace_at_position(&result, 7, 11, "coding");  //  Replacing "programming" with "coding"
+
+    fprintf_s(stdout, "After replace: %s\n", result->data);
+
+    //  Using reserve function
+    basic_string                                                    *reservedStr = Cbasic_string("");
+
+    reserve(reservedStr, 100);  //  Reserve space for at least 100 characters
+
+    reservedStr                                                     = Rbasic_stringn(reservedStr, "Reserved string memory.", reservedStr->size);
+
+    fprintf_s(stdout, "After reserve: %s\n", reservedStr->data);
+
+    fprintf_s(stdout, "Reserved capacity: %llu\n", reservedStr->capacity);
+
+    basic_string                                                    *All[] = {str1, str2, result, sub, numberStr, numberToStr, basicStr, appendStr, assignStr, sample, findSample, reservedStr};
 
     Dbasic_string(All, sizeof(All) / sizeof(All[0]));
 
