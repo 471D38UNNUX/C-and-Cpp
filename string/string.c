@@ -904,6 +904,122 @@ static void         reserve(basic_string *str, size_t new_cap)
     str->size       = new_cap;
     str->capacity   = capacity;
 }
+static void         resize_basic_string(basic_string *str, size_t new_size, char ch)
+{
+    if      (!str || new_size >= str->max_size) return;
+
+    if      (new_size < str->size)
+    {
+        str->size   = new_size;
+        str->data[new_size] = 0;
+    }
+    else if (new_size > str->size)
+    {
+        if          (new_size + 1 > str->capacity)
+        {
+            size_t              new_capacity = str->capacity;
+
+            while               (new_capacity <= new_size)
+            {
+                if              (new_capacity > 0xefffffffffffffff) break;
+
+                new_capacity    += 16;
+            }
+
+            char                *new_data = (char*)VirtualAlloc(NULL, new_capacity + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+            if                  (!new_data) ExitProcess(1);
+
+            memcpy_s(new_data, new_capacity + 1, str->data, str->size);
+            
+            memset(new_data + str->size, ch, new_size - str->size);
+            
+            new_data[new_size]  = 0;
+
+            VirtualFree(str->data, 0, MEM_RELEASE);
+
+            str->data           = new_data;
+            str->capacity       = new_capacity;
+        }
+        else
+        {
+            memset(str->data + str->size, ch, new_size - str->size);
+            
+            str->data[new_size] = 0;
+        }
+
+        str->size   = new_size;
+    }
+}
+static void         resize_basic_string_zero(basic_string *str, size_t new_size) {resize_basic_string(str, new_size, 0);}
+static size_t       rfind_char_basic_string(basic_string *str, char ch, size_t offset)
+{
+    if      (!str || !str->data) return (size_t)-1;
+    if      (offset == (size_t)-1 || offset >= str->size) offset = (!str->size) ? 0 : str->size - 1;
+
+    for     (size_t i = offset + 1; i-- > 0;) if (str->data[i] == ch) return i;
+
+    return  (size_t)-1;
+}
+static size_t       rfind_str_basic_string(basic_string *str, char *substr, size_t offset)
+{
+    if      (!str || !str->data || !substr) return (size_t)-1;
+
+    size_t  substr_len = strnlen_s(substr, _TRUNCATE);
+
+    if      (!substr_len || substr_len > str->size) return (size_t)-1;
+    if      (offset == (size_t)-1 || offset > str->size - substr_len) offset = str->size - substr_len;
+
+    for     (size_t i = offset + 1; i-- > 0;) if (!strncmp(&str->data[i], substr, substr_len)) return i;
+
+    return  (size_t)-1;
+}
+static size_t       rfind_strn_basic_string(basic_string *str, char *substr, size_t offset, size_t count)
+{
+    if      (!str || !str->data || !substr) return (size_t)-1;
+    if      (!count || count > str->size) return (size_t)-1;
+    if      (offset == (size_t)-1 || offset > str->size - count) offset = str->size - count;
+
+    for     (size_t i = offset + 1; i-- > 0;) if (!strncmp(&str->data[i], substr, count)) return i;
+
+    return  (size_t)-1;
+}
+static size_t       rfind_basic_string(const basic_string *str, const basic_string *substr, size_t offset)
+{
+    if      (!str || !str->data || !substr || !substr->data) return (size_t)-1;
+    if      (!substr->size || substr->size > str->size) return (size_t)-1;
+
+    if      (offset == (size_t)-1 || offset > str->size - substr->size) offset = str->size - substr->size;
+
+    for     (size_t i = offset + 1; i-- > 0;) if (!strncmp(&str->data[i], substr->data, substr->size)) return i;
+
+    return  (size_t)-1;
+}
+static void         shrink_to_fit_basic_string(basic_string *str)
+{
+    if                  (!str || !str->data || str->size + 1 >= str->capacity) return;
+
+    char                *new_data = (char *)VirtualAlloc(NULL, str->size + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    
+    if                  (!new_data) ExitProcess(1);
+
+    memcpy_s(new_data, str->size + 1, str->data, str->size);
+    
+    new_data[str->size] = 0;
+
+    VirtualFree(str->data, 0, MEM_RELEASE);
+
+    size_t              capacity = 15;
+
+    while               (str->size > capacity)
+    {
+        if          (capacity > 0xefffffffffffffff) break;
+
+        capacity    += 16;
+    }
+    
+    str->data           = new_data;
+    str->capacity       = capacity;
+}
 int                 main()
 {
     basic_string                                                    *str1 = Cbasic_string("Hello");
@@ -986,9 +1102,9 @@ int                 main()
     }
 
     //  Using basic_string struct
-    basic_string                                                    *basicStr = Cbasic_string("Basic string example");
+    basic_string                                                    *basistr = Cbasic_string("Basic string example");
 
-    fprintf_s(stdout, "Basic string: %s\n", basicStr->data);
+    fprintf_s(stdout, "Basic string: %s\n", basistr->data);
 
     //  Using append function
     basic_string                                                    *appendStr = Cbasic_string(" Appended text.");
@@ -1115,7 +1231,7 @@ int                 main()
 
     fprintf_s(stdout, "After insert: %s\n", result->data);
     //  Using max_size function
-    fprintf_s(stdout, "Maximum size a string can hold: %lld\n", result->max_size);
+    fprintf_s(stdout, "Maximum size a string can hold: %llu\n", result->max_size);
 
     //  Using pop_back function
     result                                                          = Rbasic_string(result, "Remove last.");
@@ -1154,7 +1270,36 @@ int                 main()
 
     fprintf_s(stdout, "Reserved capacity: %llu\n", reservedStr->capacity);
 
-    basic_string                                                    *All[] = {str1, str2, result, sub, numberStr, numberToStr, basicStr, appendStr, assignStr, sample, findSample, reservedStr};
+    //  Using resize function
+    basic_string                                                    *resizeStr = Cbasic_string("Resize me!");
+
+    resize_basic_string_zero(resizeStr, 5); //  Shrinks the string
+
+    fprintf_s(stdout, "After shrinking: %s\n", resizeStr->data);
+
+    resize_basic_string(resizeStr, 10, '*');    //  Expands and fills with '*'
+
+    fprintf_s(stdout, "After expanding: %s\n", resizeStr->data);
+
+    //  Using rfind function
+    basic_string                                                    *rfindStr = Cbasic_string("one two three two one");
+    size_t                                                          lastPos = rfind_str_basic_string(rfindStr, "two", (size_t)-1);
+
+    if                                                              (lastPos != -1) fprintf_s(stdout, "Last occurrence of 'two' is at position: %llu\n", lastPos);
+    else                                                            puts("'two' not found.");
+    
+    //  Using shrink_to_fit function
+    result                                                          = Rbasic_string(result, "This is a long string with extra capacity.");
+    
+    fprintf_s(stdout, "Capacity before shrink_to_fit: %llu\n", result->capacity);
+
+    resize_basic_string_zero(result, 10);   //  Resize to reduce actual string size
+
+    shrink_to_fit_basic_string(result); //  Request to reduce capacity to fit size
+
+    fprintf_s(stdout, "Capacity after shrink_to_fit: %llu\n", result->capacity);
+
+    basic_string                                                    *All[] = {str1, str2, result, sub, numberStr, numberToStr, basistr, appendStr, assignStr, sample, findSample, reservedStr, resizeStr, rfindStr};
 
     Dbasic_string(All, sizeof(All) / sizeof(All[0]));
 

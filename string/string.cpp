@@ -243,5 +243,36 @@ int main()
     cout                    << "After reserve: " << reservedStr << endl;
     cout                    << "Reserved capacity: " << reservedStr.capacity() << endl;
 
+    //  Using resize function
+    string                  resizeStr = "Resize me!";
+    
+    cout                    << "Original string: " << resizeStr << endl;
+
+    resizeStr.resize(5);    //  Shrinks the string
+
+    cout                    << "After shrinking: " << resizeStr << endl;
+
+    resizeStr.resize(10, '*');  //  Expands and fills with '*'
+
+    cout                    << "After expanding: " << resizeStr << endl;
+
+    //  Using rfind function
+    string                  rfindStr = "one two three two one";
+    size_t                  lastPos = rfindStr.rfind("two");
+
+    if                      (lastPos != string::npos) cout << "Last occurrence of 'two' is at position: " << lastPos << endl;
+    else                    cout << "'two' not found." << endl;
+
+    //  Using shrink_to_fit function
+    result                  = "This is a long string with extra capacity.";
+
+    cout                    << "Capacity before shrink_to_fit: " << result.capacity() << endl;
+
+    result.resize(10);  //  Resize to reduce actual string size
+
+    result.shrink_to_fit(); //  Request to reduce capacity to fit size
+
+    cout                    << "Capacity after shrink_to_fit: " << result.capacity() << endl;
+    
     ExitProcess(0);
 }
