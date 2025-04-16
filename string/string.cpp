@@ -273,6 +273,24 @@ int main()
     result.shrink_to_fit(); //  Request to reduce capacity to fit size
 
     cout                    << "Capacity after shrink_to_fit: " << result.capacity() << endl;
+
+    //  Using size function
+    result                  = "Size check example.";
+
+    cout                    << "Size of result string: " << result.size() << endl;
+
+    //  Using += operator
+    result                  = "Hello";
+    result                  += ", ";
+    result                  += "world";
+    result                  += "!";
+
+    cout                    << "After += operator: " << result << endl;
+
+    //  Using = operator
+    string                  newStr = "This is a new string.";
+    
+    cout                    << "Assigned string using = operator: " << newStr << endl;
     
     ExitProcess(0);
 }

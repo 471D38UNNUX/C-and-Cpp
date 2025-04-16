@@ -133,7 +133,7 @@ static void         append_substr(basic_string *dest, char *str, size_t count)
 {
     size_t                  new_size = dest->size + count + 1;
 
-    char                    *new_data = (char *)VirtualAlloc(NULL, new_size, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    char                    *new_data = (char*)VirtualAlloc(NULL, new_size, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
     
     if                      (!new_data) ExitProcess(1);
 
@@ -161,7 +161,7 @@ static void         append_repeated_char(basic_string *dest, size_t count, char 
 {
     size_t                  new_size = dest->size + count + 1;
 
-    char                    *new_data = (char *)VirtualAlloc(NULL, new_size, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    char                    *new_data = (char*)VirtualAlloc(NULL, new_size, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
     
     if                      (!new_data) ExitProcess(1);
 
@@ -197,7 +197,7 @@ static void         append_range(basic_string *dest, char *first, char *last)
 static void         assign_n(basic_string *dest, char *str, size_t count)
 {
     size_t              new_size = strnlen_s(str, count);
-    char                *new_data = (char *)VirtualAlloc(NULL, new_size + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    char                *new_data = (char*)VirtualAlloc(NULL, new_size + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
     
     if                  (!new_data) ExitProcess(1);
 
@@ -221,7 +221,7 @@ static void         assign_n(basic_string *dest, char *str, size_t count)
     dest->capacity      = capacity;
 }
 static void         assign(basic_string *dest, char *str) {assign_n(dest, str, strnlen_s(str, _TRUNCATE));}
-static void         assign_substr(basic_string *dest, const basic_string *src, size_t off, size_t count)
+static void         assign_substr(basic_string *dest, basic_string *src, size_t off, size_t count)
 {
     if (off >= src->size) return;
     if (count > src->size - off) count = src->size - off;
@@ -230,7 +230,7 @@ static void         assign_substr(basic_string *dest, const basic_string *src, s
 }
 static void         assign_repeat(basic_string *dest, size_t count, char ch)
 {
-    char            *new_data = (char *)VirtualAlloc(NULL, count + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    char            *new_data = (char*)VirtualAlloc(NULL, count + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
     
     if              (!new_data) ExitProcess(1);
 
@@ -306,7 +306,7 @@ static void         erase_substr(char *str, size_t *size, size_t offset, size_t 
     if          (offset >= *size) return;
     if          (offset + count > *size) count = *size - offset;
     
-    memmove_s(&str[offset], (*size - offset) * sizeof(char), &str[offset + count], (*size - (offset + count)) * sizeof(char));
+    memmove_s(&str[offset], *size - offset, &str[offset + count], *size - (offset + count));
 
     *size       -= count;
     str[*size]  = 0;
@@ -441,7 +441,7 @@ static size_t       find_last_not_of_str_n(char *str, size_t str_size, char *cha
 
     return  -1;
 }
-static size_t find_last_of_char( char *str, char char_value)
+static size_t find_last_of_char(char *str, char char_value)
 {
     size_t  len = strnlen_s(str, SIZE_MAX);
 
@@ -488,7 +488,7 @@ static basic_string *insert_str_basic_string(basic_string *bstr, size_t pos, cha
 
     if      (pos > len1) return NULL;
     
-    char    *new_data = (char *)VirtualAlloc(NULL, len1 + len2 + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    char    *new_data = (char*)VirtualAlloc(NULL, len1 + len2 + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
     
     if      (!new_data) ExitProcess(1);
 
@@ -506,7 +506,7 @@ static basic_string *insert_str_count_basic_string(basic_string *bstr, size_t po
 
     if      (pos > len1) return NULL;
 
-    char    *new_data = (char *)VirtualAlloc(NULL, len1 + count + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    char    *new_data = (char*)VirtualAlloc(NULL, len1 + count + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
     
     if      (!new_data) ExitProcess(1);
 
@@ -530,7 +530,7 @@ static basic_string *insert_repeat_char_basic_string(basic_string *bstr, size_t 
     
     if      (pos > len) return NULL;
 
-    char    *new_data = (char *)VirtualAlloc(NULL, len + count + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    char    *new_data = (char*)VirtualAlloc(NULL, len + count + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
     
     if      (!new_data) ExitProcess(1);
 
@@ -589,7 +589,7 @@ static int          replace_at_position(basic_string **str, size_t pos, size_t l
     if                  (pos > s->size || pos + len > s->size) return -1;
 
     size_t              new_size = s->size - len + rep_len;
-    char                *new_data = (char *)VirtualAlloc(NULL, new_size + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    char                *new_data = (char*)VirtualAlloc(NULL, new_size + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
     
     if                  (!new_data) ExitProcess(1);
     if                  (pos > 0) memcpy_s(new_data, new_size + 1, s->data, pos);
@@ -617,7 +617,7 @@ static int          replace_at_position_basic_string(basic_string **str, size_t 
     if                  (pos > s->size || pos + len > s->size) return -1;
 
     size_t              new_size = s->size - len + rep_len;
-    char                *new_data = (char *)VirtualAlloc(NULL, new_size + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    char                *new_data = (char*)VirtualAlloc(NULL, new_size + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
     
     if                  (!new_data) ExitProcess(1);
     if                  (pos > 0) memcpy_s(new_data, new_size + 1, s->data, pos);
@@ -644,7 +644,7 @@ static int replace_at_position_partial(basic_string **str, size_t pos, size_t le
     if                  (pos > s->size || pos + len > s->size) return -1;
 
     size_t              new_size = s->size - len + rep_len;
-    char                *new_data = (char *)VirtualAlloc(NULL, new_size + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    char                *new_data = (char*)VirtualAlloc(NULL, new_size + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
     
     if                  (!new_data) ExitProcess(1);
     if                  (pos > 0) memcpy_s(new_data, new_size + 1, s->data, pos);
@@ -662,7 +662,7 @@ static int replace_at_position_partial(basic_string **str, size_t pos, size_t le
 
     return              0;
 }
-static int          replace_substring(basic_string **str, size_t pos, size_t count, const char *rep, size_t rep_pos, size_t rep_len)
+static int          replace_substring(basic_string **str, size_t pos, size_t count, char *rep, size_t rep_pos, size_t rep_len)
 {
     if                  (!str || !(*str) || !rep) return -1;
 
@@ -672,7 +672,7 @@ static int          replace_substring(basic_string **str, size_t pos, size_t cou
     if                  (pos + count > s->size) count = s->size - pos;
 
     size_t              new_size = s->size - count + rep_len;
-    char                *new_data = (char *)VirtualAlloc(NULL, new_size + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    char                *new_data = (char*)VirtualAlloc(NULL, new_size + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
     
     if                  (!new_data) ExitProcess(1);
     if                  (pos > 0) memcpy_s(new_data, new_size + 1, s->data, pos);
@@ -699,7 +699,7 @@ static int          replace_with_char(basic_string **str, size_t pos, size_t len
     if                  (pos > s->size || pos + len > s->size) return -1;
 
     size_t              new_size = s->size - len + count;
-    char                *new_data = (char *)VirtualAlloc(NULL, new_size + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    char                *new_data = (char*)VirtualAlloc(NULL, new_size + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
     
     if                  (!new_data) ExitProcess(1);
     if                  (pos > 0) memcpy_s(new_data, new_size + 1, s->data, pos);
@@ -728,7 +728,7 @@ static int              replace_using_iterators(basic_string **str, char *first,
     if                  (pos > s->size || pos + len > s->size) return -1;
 
     size_t              new_size = s->size - len + rep_len;
-    char                *new_data = (char *)VirtualAlloc(NULL, new_size + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    char                *new_data = (char*)VirtualAlloc(NULL, new_size + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
     
     if                  (!new_data) ExitProcess(1);
 
@@ -757,7 +757,7 @@ static int              replace_using_iterators_basic_string(basic_string **str,
     if                  (pos > s->size || pos + len > s->size) return -1;
 
     size_t              new_size = s->size - len + rep_len;
-    char                *new_data = (char *)VirtualAlloc(NULL, new_size + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    char                *new_data = (char*)VirtualAlloc(NULL, new_size + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
     
     if                  (!new_data) ExitProcess(1);
     if                  (pos > 0) memcpy_s(new_data, new_size + 1, s->data, pos);
@@ -789,7 +789,7 @@ static int              replace_with_substring(basic_string **str, size_t pos, s
     if                  (pos > s->size || pos + len > s->size) return -1;
 
     size_t              new_size = s->size - len + use_len;
-    char                *new_data = (char *)VirtualAlloc(NULL, new_size + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    char                *new_data = (char*)VirtualAlloc(NULL, new_size + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
     
     if                  (!new_data) ExitProcess(1);
     if                  (pos > 0) memcpy_s(new_data, new_size + 1, s->data, pos);
@@ -817,7 +817,7 @@ static int              replace_using_iterators_with_char(basic_string **str, ch
     if                  (pos > s->size || pos + len > s->size) return -1;
 
     size_t              new_size = s->size - len + count;
-    char                *new_data = (char *)VirtualAlloc(NULL, new_size + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    char                *new_data = (char*)VirtualAlloc(NULL, new_size + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
     
     if                  (!new_data) ExitProcess(1);
     if                  (pos > 0) memcpy_s(new_data, new_size + 1, s->data, pos);
@@ -845,7 +845,7 @@ static int replace_using_iterators_multiple_chars(basic_string **str, char *firs
     if                  (pos > s->size || pos + len > s->size) return -1;
 
     size_t              new_size = s->size - len + rep_len;
-    char                *new_data = (char *)VirtualAlloc(NULL, new_size + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    char                *new_data = (char*)VirtualAlloc(NULL, new_size + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
     
     if                  (!new_data) ExitProcess(1);
     if                  (pos > 0) memcpy_s(new_data, new_size + 1, s->data, pos);
@@ -865,7 +865,7 @@ static int replace_using_iterators_multiple_chars(basic_string **str, char *firs
 }
 static int          replace_entire_string(basic_string **str, char *replacement)
 {
-    *str    = Rbasic_string(*str, (char *)replacement);
+    *str    = Rbasic_string(*str, (char*)replacement);
 
     return  (*str != NULL) ? 0 : -1;
 }
@@ -879,7 +879,7 @@ static void         reserve(basic_string *str, size_t new_cap)
 {
     if              (!str || new_cap <= str->capacity) return;
 
-    char            *new_data = (char *)VirtualAlloc(NULL, new_cap + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    char            *new_data = (char*)VirtualAlloc(NULL, new_cap + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
     
     if              (!new_data)  ExitProcess(1);
     if              (str->data)
@@ -919,7 +919,7 @@ static void         resize_basic_string(basic_string *str, size_t new_size, char
         {
             size_t              new_capacity = str->capacity;
 
-            while               (new_capacity <= new_size)
+            while               (new_capacity < new_size)
             {
                 if              (new_capacity > 0xefffffffffffffff) break;
 
@@ -983,7 +983,7 @@ static size_t       rfind_strn_basic_string(basic_string *str, char *substr, siz
 
     return  (size_t)-1;
 }
-static size_t       rfind_basic_string(const basic_string *str, const basic_string *substr, size_t offset)
+static size_t       rfind_basic_string(basic_string *str, basic_string *substr, size_t offset)
 {
     if      (!str || !str->data || !substr || !substr->data) return (size_t)-1;
     if      (!substr->size || substr->size > str->size) return (size_t)-1;
@@ -998,7 +998,7 @@ static void         shrink_to_fit_basic_string(basic_string *str)
 {
     if                  (!str || !str->data || str->size + 1 >= str->capacity) return;
 
-    char                *new_data = (char *)VirtualAlloc(NULL, str->size + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    char                *new_data = (char*)VirtualAlloc(NULL, str->size + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
     
     if                  (!new_data) ExitProcess(1);
 
@@ -1019,6 +1019,68 @@ static void         shrink_to_fit_basic_string(basic_string *str)
     
     str->data           = new_data;
     str->capacity       = capacity;
+}
+static void         basic_string_add_char(basic_string *dest, char c)
+{
+    size_t                      new_size = dest->size + 2;
+    char                        *new_data = (char*)VirtualAlloc(NULL, new_size, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    
+    if      (!new_data) ExitProcess(1);
+
+    memcpy_s(new_data, new_size, dest->data, dest->size);
+    
+    new_data[dest->size]        = c;
+    new_data[dest->size + 1]    = 0;
+
+    VirtualFree(dest->data, 0, MEM_RELEASE);
+
+    size_t                      capacity = 15;
+
+    while                       (new_size - 1 > capacity) capacity += 16;
+
+    dest->data                  = new_data;
+    dest->size                  = new_size - 1;
+    dest->capacity              = capacity;
+}
+static void         basic_string_add_str(basic_string *dest, char *str)
+{
+    size_t                  len = strnlen_s(str, SIZE_MAX);
+    size_t                  new_size = dest->size + len + 1;
+
+    char                    *new_data = (char*)VirtualAlloc(NULL, new_size, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    
+    if                      (!new_data) ExitProcess(1);
+
+    memcpy_s(new_data, new_size, dest->data, dest->size);
+    memcpy_s(new_data + dest->size, new_size - dest->size, str, len);
+    
+    new_data[new_size - 1]  = 0;
+
+    VirtualFree(dest->data, 0, MEM_RELEASE);
+
+    size_t                  capacity = 15;
+
+    while                   (new_size - 1 > capacity) capacity += 16;
+
+    dest->data              = new_data;
+    dest->size              = new_size - 1;
+    dest->capacity          = capacity;
+}
+static void         basic_string_add_string(basic_string *dest, basic_string *src) {basic_string_add_str(dest, src->data);}
+static void         operator_assign_char(basic_string *dest, char char_value) {assign_repeat(dest, 1, char_value);}
+static void         operator_assign_str(basic_string *dest, char *ptr) {assign(dest, (char*)ptr);}
+static void         operator_assign_copy(basic_string *dest, basic_string *src) {assign_substr(dest, (basic_string*)src, 0, src->size);}
+static void         operator_assign_move(basic_string *dest, basic_string *src)
+{
+    if              (dest == src) return;
+    if              (dest->data)  VirtualFree(dest->data, 0, MEM_RELEASE);
+
+    dest->data      = src->data;
+    dest->size      = src->size;
+    dest->capacity  = src->capacity;
+    src->data       = NULL;
+    src->size       = 0;
+    src->capacity   = 0;
 }
 int                 main()
 {
@@ -1299,7 +1361,28 @@ int                 main()
 
     fprintf_s(stdout, "Capacity after shrink_to_fit: %llu\n", result->capacity);
 
-    basic_string                                                    *All[] = {str1, str2, result, sub, numberStr, numberToStr, basistr, appendStr, assignStr, sample, findSample, reservedStr, resizeStr, rfindStr};
+    //  Using size function
+    result                                                          = Rbasic_string(result, "Size check example.");
+
+    fprintf_s(stdout, "Size of result string: %llu\n", result->size);
+
+    //  Using += operator
+    result                                                          = Rbasic_string(result, "Hello");
+    
+    basic_string_add_str(result, ", ");
+    basic_string_add_str(result, "world");
+    basic_string_add_str(result, "!");
+
+    fprintf_s(stdout, "After += operator: %s\n", result->data);
+
+    //  Using = operator
+    basic_string                                                    *newStr = Cbasic_string("");
+
+    operator_assign_str(newStr, "This is a new string.");
+
+    fprintf_s(stdout, "Assigned string using = operator: %s\n", newStr->data);
+
+    basic_string                                                    *All[] = {str1, str2, result, sub, numberStr, numberToStr, basistr, appendStr, assignStr, sample, findSample, reservedStr, resizeStr, rfindStr, newStr};
 
     Dbasic_string(All, sizeof(All) / sizeof(All[0]));
 
