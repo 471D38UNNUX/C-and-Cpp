@@ -125,7 +125,8 @@ static void         Dbasic_string(basic_string *basic_string[], size_t size)
 {
     for (size_t i = 0; i < size; i++)
     {
-        VirtualFree(basic_string[i]->data, 0, MEM_RELEASE);
+        basic_string[i]->get_allocator.destroy(basic_string[i]);
+        
         VirtualFree(basic_string[i], 0, MEM_RELEASE);
     }
 }
@@ -1082,6 +1083,26 @@ static void         operator_assign_move(basic_string *dest, basic_string *src)
     src->size       = 0;
     src->capacity   = 0;
 }
+//  Macro to define char_traits-like assign functions for any char_type
+#define DEFINE_CHAR_TRAITS(NAME, TYPE)                                  \
+    static void NAME##_assign_char(TYPE *to, TYPE from) {*to = from;}   \
+    static TYPE *NAME##_assign_chars(TYPE *to, size_t num, TYPE from)   \
+    {                                                                   \
+        for (size_t i = 0; i < num; ++i) to[i] = from;                  \
+        return to;                                                      \
+    }
+// Regular char
+DEFINE_CHAR_TRAITS(char_traits, char)
+
+// Wide char
+DEFINE_CHAR_TRAITS(wchar_traits, wchar_t)
+
+// 16-bit char (if available in your compiler)
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+    #include <uchar.h>
+    DEFINE_CHAR_TRAITS(char16_traits, char16_t)
+    DEFINE_CHAR_TRAITS(char32_traits, char32_t)
+#endif
 int                 main()
 {
     basic_string                                                    *str1 = Cbasic_string("Hello");
@@ -1382,7 +1403,30 @@ int                 main()
 
     fprintf_s(stdout, "Assigned string using = operator: %s\n", newStr->data);
 
-    basic_string                                                    *All[] = {str1, str2, result, sub, numberStr, numberToStr, basistr, appendStr, assignStr, sample, findSample, reservedStr, resizeStr, rfindStr, newStr};
+    //  Using = operator
+    basic_string                                                    *bracketStr = Cbasic_string("Bracket");
+
+    fprintf_s(stdout, "Original string: %s\n", bracketStr->data);
+
+    bracketStr->data[0]                                             = 'C';
+
+    fprintf_s(stdout, "Modified string using []: %s\n", bracketStr->data);
+
+    //  Using ""s operator (user-defined literal for std::string)
+    basic_string                                                    *literalStr = Cbasic_string("This is a string literal");
+
+    fprintf_s(stdout, "String created using \"\"s operator: %s\n", literalStr->data);
+
+    //  Using char_traits<char>::assign function
+    char                                                            bufferAssign[20];
+
+    char_traits_assign_chars(bufferAssign, 10, 'A');    //  Fill first 10 chars with 'A'
+
+    bufferAssign[10]                                                = 0;    //  Null-terminate the C-style string
+
+    fprintf_s(stdout, "Buffer after char_traits::assign: %s\n", bufferAssign);
+
+    basic_string                                                    *All[] = {str1, str2, result, sub, numberStr, numberToStr, basistr, appendStr, assignStr, sample, findSample, reservedStr, resizeStr, rfindStr, newStr, bracketStr, literalStr};
 
     Dbasic_string(All, sizeof(All) / sizeof(All[0]));
 

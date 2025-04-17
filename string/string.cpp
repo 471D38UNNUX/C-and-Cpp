@@ -3,6 +3,7 @@
 #include <string>
 
 using namespace std;
+using namespace string_literals;    //  Enables ""s literal for std::string
 
 int main()
 {
@@ -291,6 +292,29 @@ int main()
     string                  newStr = "This is a new string.";
     
     cout                    << "Assigned string using = operator: " << newStr << endl;
+
+    //  Using [] operator
+    string                  bracketStr = "Bracket";
+
+    cout                    << "Original string: " << bracketStr << endl;
+
+    bracketStr[0]           = 'C';
+
+    cout                    << "Modified string using []: " << bracketStr << endl;
+
+    //  Using ""s operator (user-defined literal for std::string)
+    string                  literalStr = "This is a string literal"s;
+
+    cout                    << "String created using \"\"s operator: " << literalStr << endl;
+
+    //  Using char_traits<char>::assign function
+    char                    bufferAssign[20];
+
+    char_traits<char>::assign(bufferAssign, 10, 'A');   //  Fill first 10 chars with 'A'
+
+    bufferAssign[10]        = 0;    //  Null-terminate the C-style string
+
+    cout                    << "Buffer after char_traits::assign: " << bufferAssign << endl;
     
     ExitProcess(0);
 }
